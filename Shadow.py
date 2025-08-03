@@ -97,7 +97,11 @@ def shell(conn):
             conn.send(encrypt(cmd.encode()))
             if cmd == 'exit':
                 break
-            if cmd == 'clear': os.system("cls")
+            if cmd == 'clear': 
+                if os.name == 'posix':
+                    os.system("clear")
+                else:
+                    os.system("cls")
             try:
                 output = recv_data(conn)
                 print(Fore.LIGHTGREEN_EX + output.decode(errors='ignore'))
