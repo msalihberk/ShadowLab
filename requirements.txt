@@ -1,0 +1,8 @@
+colorama
+cryptography
+pyinstaller
+opencv-python
+requests
+sounddevice
+wavio
+pillow
