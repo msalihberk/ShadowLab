@@ -13,10 +13,31 @@ Shadow is a Python-based remote administration tool (RAT) for Windows. It allows
 - Geolocation (using ipinfo.io)
 - Backdoor creation and removal (persistence via Windows registry)
 
-## Usage
+# ShadowRAT
 
+ShadowRAT is a modular Python-based remote administration tool (RAT) for Windows. It allows you to generate payloads, control remote machines, and perform post-exploitation tasks through a user-friendly command and control (C2) interface. This project is for educational and authorized security testing purposes only.
 
-### Requirements
+## Features
+- Modular architecture (mainclass, payloads, postexploits)
+- Reverse TCP connection
+- Remote shell access
+- Microphone recording
+- Webcam snapshot (OpenCV)
+- File upload
+- Geolocation (ipinfo.io)
+- Backdoor creation and removal (Windows registry persistence)
+- Agent info display
+- Keylogger (postexploits)
+
+## Directory Structure
+
+- `mainclass/` : Core modules (system, shell, builder, encrypter, options)
+- `payloads/`  : Payload scripts for agents
+- `postexploits/` : Post-exploitation tools (e.g., Keylogger)
+- `confs/`     : Configuration files
+- `settings/`  : Auth and key files
+
+## Requirements
 - Python 3.x
 - colorama
 - cryptography
@@ -26,28 +47,34 @@ Shadow is a Python-based remote administration tool (RAT) for Windows. It allows
 - sounddevice
 - wavio
 - pillow
+- pynput (for keylogger)
 
 Install dependencies:
 ```
 pip install -r requirements.txt
 ```
 
+## Usage
 
-### Generate Auth Code and Key
+### 1. Generate Auth Code and Key
 ```
 python Shadow.py --generate
 ```
 
-### Start Listener
+### 2. Start the Main Menu
 ```
-python Shadow.py --listen
+python Shadow.py
 ```
+Follow the menu to select IP, port, build payloads, or listen for agents.
 
-### Generate Payload
-```
-python Shadow.py --ip <LHOST> --port <LPORT> --type py|exe
-```
+### 3. Build Payload
+Use the menu to create a Python or EXE payload. You can optionally bind an application.
 
+### 4. Listen for Agents
+Select the listen option from the menu to accept incoming connections from payloads.
+
+### 5. Post-Exploitation
+Use tools in `postexploits/` (e.g., Keylogger) as needed.
 
 ## Disclaimer
 This tool is intended for educational purposes and authorized penetration testing only. Unauthorized use is strictly prohibited.
