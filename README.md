@@ -58,7 +58,7 @@ pip install -r requirements.txt
 
 ### 1. Generate Auth Code and Key
 ```
-python Shadow.py --generate
+Generate codes in menu
 ```
 
 ### 2. Start the Main Menu
@@ -78,3 +78,4 @@ Use tools in `postexploits/` (e.g., Keylogger) as needed.
 
 ## Disclaimer
 This tool is intended for educational purposes and authorized penetration testing only. Unauthorized use is strictly prohibited.
+
