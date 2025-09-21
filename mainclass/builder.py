@@ -57,7 +57,7 @@ class builder():
                     file.close()
                     PyInstaller.__main__.run(options)
 
-                    shutil.copy("dist/temp.exe", "build/agent.exe")
+                    shutil.move("dist/temp.exe", "build/agent.exe")
                     shutil.rmtree("build/temp")
                     shutil.rmtree("dist")
                     os.remove("temp.spec")
