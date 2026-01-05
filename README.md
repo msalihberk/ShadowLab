@@ -43,9 +43,8 @@ pip install -r requirements.txt
 ## Usage
 
 ### 1. Generate Auth Code and Key
-```
+
 Generate codes in menu
-```
 
 ### 2. Start the Main Menu
 ```
@@ -64,5 +63,6 @@ Use tools in `postexploits/` (e.g., Keylogger) as needed.
 
 ## Disclaimer
 This tool is intended for educational purposes and authorized penetration testing only. Unauthorized use is strictly prohibited.
+
 
 
