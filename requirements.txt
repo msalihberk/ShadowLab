@@ -6,3 +6,4 @@ requests
 sounddevice
 wavio
 pillow
+pynput
