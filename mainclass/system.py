@@ -37,7 +37,7 @@ class system():
         header = pyfiglet.figlet_format(" SHADOW", font=font)
 
         print(Fore.CYAN + Style.BRIGHT + header)
-        print(Fore.WHITE + "=" * 80)
+        print(Fore.WHITE + line_char * 80)
         
         author = "By Mustafa Salih Berk"
         ver_text = f"v{version}"
@@ -47,15 +47,17 @@ class system():
         print(Fore.WHITE + "=" * 80)
         print(f" {Fore.RED}[!] {Fore.WHITE}Educational & Authorized Use Only\n")
     def printDisclaimer():
+        font = system.getdata("header_font")
+        line_char = system.getdata("line_char")
         os.system('cls' if os.name == 'nt' else 'clear')
 
-        title_text = pyfiglet.figlet_format("SHADOW", font="slant")
+        title_text = pyfiglet.figlet_format("SHADOW", font=font)
         print(Fore.CYAN + Style.BRIGHT + title_text)
-        print(Fore.WHITE + "=" * 80)
+        print(Fore.WHITE + line_char * 80)
         print(f"{Fore.CYAN}[ CATEGORY ] {Fore.WHITE}: CYBERSECURITY RESEARCH & EDUCATIONAL SIMULATION")
         print(f"{Fore.CYAN}[ DEVELOPER ] {Fore.WHITE}: Mustafa Salih Berk")
         print(f"{Fore.CYAN}[ PURPOSE   ] {Fore.WHITE}: Analyzing Network Sockets & Defensive Security Architectures")
-        print(Fore.WHITE + "=" * 80)
+        print(Fore.WHITE + line_char * 80)
 
         print(f"\n{Fore.RED}{Style.BRIGHT}[!] LEGAL NOTICE:")
         print(f"{Fore.YELLOW}    This framework is strictly for EDUCATIONAL and AUTHORIZED testing only.")
@@ -71,7 +73,7 @@ class system():
         print(f"{Fore.GREEN}    By continuing, you agree to use this knowledge for the benefit of")
         print(f"{Fore.GREEN}    information security and academic learning.")
 
-        print(Fore.WHITE + "\n" + "=" * 80)
+        print(Fore.WHITE + "\n" + line_char * 80)
         print(Fore.CYAN + "Press ENTER to initialize the environment...")
         input()
     
