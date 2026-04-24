@@ -24,21 +24,29 @@ def generateConf(): generate()
 
 def selectIP(): 
     global ip
-    ip = system.input('IP')
+    system.clear_screen()
+    system.printheader()
+    system.printMenuOptions(ip, port)
+    ip = system.input(1)
 
 def selectPort(): 
     global port
-    port = system.input('PORT')
+    system.clear_screen()
+    system.printheader()
+    system.printMenuOptions(ip, port)
+    port = system.input(2)
 
+# TODO: Implement Staged/Unstaged payload delivery logic.
 def getPayloadOption():
     while True:
         system.clear_screen()
         system.printheader()
         system.printBuildOptions(2)
-        command = system.input().strip('')
+        command = system.input(6).strip('')
 
         if command == '1' or command == '2':
             break
+        elif command == '9':break
 
     return command
 
@@ -48,10 +56,10 @@ def getAppOption():
         system.clear_screen()
         system.printheader()
         system.printBuildOptions(3)
-        command = system.input().strip('')
+        command = system.input(5).strip('')
 
         if command == '1':
-            location = system.input('LOCATION')
+            location = system.input(5)
             if os.path.exists(location): break
             else: 
                 print(Fore.LIGHTRED_EX + '[!] Error: File Not Exists')
@@ -59,6 +67,7 @@ def getAppOption():
                 continue
             
         elif command == '2': break
+        elif command == '9':break
         
     return location
 
@@ -71,7 +80,7 @@ def build():
         system.clear_screen()
         system.printheader()
         system.printBuildOptions(1)
-        command = system.input().strip('')
+        command = system.input(3).strip('')
 
         if command == '9': break
 
@@ -106,7 +115,7 @@ def listen():
         system.clear_screen()
         system.printheader()
         system.printAgentOptions()
-        command = system.input()
+        command = system.input(4, address[0], address[1])
 
         if command == "q": break
         func = agent_options.get(command)
@@ -124,11 +133,12 @@ init(autoreset=True)
 system.clear_screen()
 
 def main():
+    system.printDisclaimer()
     while True:
         system.clear_screen()
         system.printheader()
         system.printMenuOptions(ip, port)
-        command = system.input()
+        command = system.input(0)
 
         if command == 'q': break
         func = menu_options.get(command)
