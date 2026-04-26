@@ -1,5 +1,5 @@
 # Shadow
-![Python Version](https://img.shields.io/badge/python-3.15.5-blue.svg)
+![Python Version](https://img.shields.io/badge/python-3.13.5-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Purpose](https://img.shields.io/badge/purpose-educational-orange.svg)
 > Python-based C2 Framework - Security Research Project
