@@ -27,6 +27,8 @@ By using this project, you agree to use it responsibly and ethically.
 
 ## 📋 Overview
 
+![Shadow Tool Demo](assets/demo.gif)
+
 Shadow is a security research project that demonstrates how Command & Control (C2) frameworks operate. It provides hands-on experience with:
 
 - Socket programming and network communication
