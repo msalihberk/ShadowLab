@@ -37,27 +37,28 @@ class system():
         header = pyfiglet.figlet_format(" SHADOW", font=font)
 
         print(Fore.CYAN + Style.BRIGHT + header)
-        print(Fore.WHITE + line_char * 80)
+        print(Fore.WHITE + line_char * line_size)
         
         author = "By Mustafa Salih Berk"
         ver_text = f"v{version}"
         space_count = line_size - len(author) - len(ver_text) - 2
         
         print(f" {Fore.WHITE}{author}{' ' * space_count}{Fore.CYAN}{ver_text}")
-        print(Fore.WHITE + "=" * 80)
+        print(Fore.WHITE + line_char * line_size)
         print(f" {Fore.RED}[!] {Fore.WHITE}Educational & Authorized Use Only\n")
     def printDisclaimer():
         font = system.getdata("header_font")
         line_char = system.getdata("line_char")
+        line_size = system.getdata("line_size")
         os.system('cls' if os.name == 'nt' else 'clear')
 
         title_text = pyfiglet.figlet_format("SHADOW", font=font)
         print(Fore.CYAN + Style.BRIGHT + title_text)
-        print(Fore.WHITE + line_char * 80)
+        print(Fore.WHITE + line_char * line_size)
         print(f"{Fore.CYAN}[ CATEGORY ] {Fore.WHITE}: CYBERSECURITY RESEARCH & EDUCATIONAL SIMULATION")
         print(f"{Fore.CYAN}[ DEVELOPER ] {Fore.WHITE}: Mustafa Salih Berk")
         print(f"{Fore.CYAN}[ PURPOSE   ] {Fore.WHITE}: Analyzing Network Sockets & Defensive Security Architectures")
-        print(Fore.WHITE + line_char * 80)
+        print(Fore.WHITE + line_char * line_size)
 
         print(f"\n{Fore.RED}{Style.BRIGHT}[!] LEGAL NOTICE:")
         print(f"{Fore.YELLOW}    This framework is strictly for EDUCATIONAL and AUTHORIZED testing only.")
@@ -73,7 +74,7 @@ class system():
         print(f"{Fore.GREEN}    By continuing, you agree to use this knowledge for the benefit of")
         print(f"{Fore.GREEN}    information security and academic learning.")
 
-        print(Fore.WHITE + "\n" + line_char * 80)
+        print(Fore.WHITE + "\n" + line_char * line_size)
         print(Fore.CYAN + "Press ENTER to initialize the environment...")
         input()
     
