@@ -1,4 +1,4 @@
-# Shadow
+# ShadowLab
 ![Python Version](https://img.shields.io/badge/python-3.13.x-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Purpose](https://img.shields.io/badge/purpose-educational-orange.svg)
@@ -27,7 +27,7 @@ By using this project, you agree to use it responsibly and ethically.
 
 ## 📋 Overview
 
-![Shadow Tool Demo](assets/demo.gif)
+![ShadowLab Tool Demo](assets/demo.gif)
 
 Shadow is a security research project that demonstrates how Command & Control (C2) frameworks operate. It provides hands-on experience with:
 
@@ -87,7 +87,7 @@ implementation)
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/msalihberk/Shadow.git
+git clone https://github.com/msalihberk/ShadowLab.git
 cd Shadow
 ```
 
