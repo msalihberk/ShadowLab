@@ -74,8 +74,7 @@ Shadow/
 │   └── system.py       # System utilities
 ├── payloads/           # Agent/implant scripts
 ├── postexploits/       # Post-exploitation modules (future)
-│   └── keystroke.py    # (In development - Pending security
-implementation)
+│   └── keystroke.py    # (In development - Pending security implementation)
 ├── confs/              # Configuration files
 │   └── conf.json       # Auth & settings
 └── requirements.txt    # Python dependencies
@@ -143,7 +142,7 @@ Once connected, use these commands:
 - **Python 3.x**
 - colorama
 - cryptography
-- pyinstaller
+- nuitka
 - opencv-python
 - requests
 - sounddevice
