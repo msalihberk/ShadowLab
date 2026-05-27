@@ -55,7 +55,7 @@ class system():
         title_text = pyfiglet.figlet_format("SHADOW", font=font)
         print(Fore.CYAN + Style.BRIGHT + title_text)
         print(Fore.WHITE + line_char * line_size)
-        print(f"{Fore.CYAN}[ CATEGORY ] {Fore.WHITE}: CYBERSECURITY RESEARCH & EDUCATIONAL SIMULATION")
+        print(f"{Fore.CYAN}[ CATEGORY  ] {Fore.WHITE}: CYBERSECURITY RESEARCH & EDUCATIONAL SIMULATION")
         print(f"{Fore.CYAN}[ DEVELOPER ] {Fore.WHITE}: Mustafa Salih Berk")
         print(f"{Fore.CYAN}[ PURPOSE   ] {Fore.WHITE}: Analyzing Network Sockets & Defensive Security Architectures")
         print(Fore.WHITE + line_char * line_size)

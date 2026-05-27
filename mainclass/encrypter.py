@@ -1,7 +1,11 @@
 from cryptography.fernet import Fernet
 from .system import system
 
-fernet = Fernet(system.getdata("KEY"))
+
+_key = system.getdata("KEY")
+if isinstance(_key, str):
+    _key = _key.encode()
+fernet = Fernet(_key)
 
 def encrypt(data): return fernet.encrypt(data)
 def decrypt(data): return fernet.decrypt(data)

