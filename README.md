@@ -29,6 +29,8 @@ By using this project, you agree to use it responsibly and ethically.
 
 ![ShadowLab Tool Demo](assets/demo.gif)
 
+> 📖 **Read the Technical Analysis:** [ShadowLab Architecture and Design](https://medium.com/@msalihberk/shadowlab-a-modular-c2-framework-architecture-built-with-python-for-modern-cybersecurity-research-7acb496e6784)
+
 ShadowLab is a modular Command & Control (C2) framework developed for security research and educational purposes. The project demonstrates the lifecycle of remote administration tools, focusing on:
 
 - **Socket Programming:** Low-level TCP communication using length-prefixed data packets.
