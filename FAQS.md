@@ -25,3 +25,6 @@ Use **Option 5 (Generate Conf)** in the main menu. This will regenerate the `con
 
 ### 8. Why is PyInstaller required?
 PyInstaller is used to compile the Python agent into a standalone Windows executable (.exe), allowing it to run on systems without a Python interpreter installed.
+
+### 9. Is ShadowLab a malicious software or malware?
+No, ShadowLab is strictly an educational tool and security research framework designed for authorized testing, laboratory simulations, and purple-team training. While it implements techniques commonly found in remote administration tools (RATs) to demonstrate endpoint behavior, it lacks any malicious propagation or automated execution mechanisms. It is built entirely to help students and researchers analyze adversary methodologies and build better defensive controls in a controlled, legal environment.
