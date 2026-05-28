@@ -7,6 +7,8 @@ By participating in this project, you agree to maintain a professional and respe
 
 ## How Can I Contribute?
 
+> ⚠️ **CRITICAL SECURITY NOTE:** If you find a security vulnerability, logical flaw, or anything that could compromise the integrity of this framework, **DO NOT open a public issue or pull request.** Please immediately refer to our [SECURITY.md](SECURITY.md) guidelines to submit a confidential report via GitHub's Private Vulnerability Reporting infrastructure.
+
 ### Reporting Bugs
 - Check if the bug has already been reported in the **Issues** tab.
 - If not, open a new issue with a clear title and a detailed description of the environment (OS, Python version).
@@ -23,7 +25,7 @@ By participating in this project, you agree to maintain a professional and respe
 5. Open a Pull Request.
 
 ## Technical Guidelines
-- **Python Version:** Ensure your code is compatible with Python 3.10+.
+- **Python Version:** Ensure your code is compatible with Python 3.13.
 - **Encryption:** Never commit hardcoded keys. Use the `system.getdata("KEY")` methods.
 - **Dependencies:** If you add a new library, update `requirements.txt`.
 - **Documentation:** Comment your code, especially when interacting with Windows APIs or complex socket logic.
