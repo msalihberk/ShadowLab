@@ -85,7 +85,7 @@ def get_security_info(conn):
                       "productState": f.productState, "timestamp": f.timestamp} for f in firewall]
     antivirus_info = [{"displayName": a.displayName, "instanceGuid": a.instanceGuid, 
                       "pathToSignedProductExe": a.pathToSignedProductExe , "pathToSignedReportingExe": a.pathToSignedReportingExe,
-                      "productState": a.productState, "timestamp": a.timestamp} for a in firewall]
+                      "productState": a.productState, "timestamp": a.timestamp} for a in antivirus]
     json_send(conn, {"Firewall": firewall_info, "Antivirus": antivirus_info})
 
 def del_persistence(conn):

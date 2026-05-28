@@ -1,6 +1,6 @@
 from colorama import Fore, init
 from .system import system
-from .pyinstaller_progress import run_pyinstaller_with_progress
+from .pyi_progress import run_pyinstaller_with_progress
 import shutil
 import os
 

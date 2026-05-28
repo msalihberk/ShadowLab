@@ -1,5 +1,13 @@
 colorama
+cryptography
 pyinstaller
-mss
+opencv-python
+requests
+sounddevice
+wavio
+pillow
+pynput
+simplejson
+pyfiglet
+wmi
 plyer
-pyaes

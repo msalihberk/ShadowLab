@@ -5,13 +5,13 @@ class options():
              "APP LOCATION", "STAGE MODE", "NOTIFICATION TITLE",
                "NOTIFICATION TEXT", "NOTIFICATION APP", "NOTIFICATION"]
     agent_options = f"""\n
-            1   -   Shell
-            2   -   Persistence
-            3   -   Record Mic
+            1   -   Remote Shell
+            2   -   Create Persistence
+            3   -   Record Microphone
             4   -   Upload File
-            5   -   Cam
+            5   -   Webcam Snapshot
             6   -   Get Location
-            7   -   Destroy Persistence
+            7   -   Remove Persistence
             8   -   System Info
             9   -   Send Notification
             10  -   Get Screenshot
@@ -134,7 +134,7 @@ class options():
         SHADOW  = f"{Fore.MAGENTA}{Style.BRIGHT}SHADOW"
         DIVIDER = f"{Fore.WHITE}│"
         AGENTS  = f"{Fore.CYAN}AGENTS:{Fore.GREEN}{1}"
-        SESS    = f"{Fore.CYAN}SESS:{Fore.YELLOW}{"127.0.0.1"}"
+        SESS    = f"{Fore.CYAN}SESS:{Fore.YELLOW}{'127.0.0.1'}"
         BRACKET_L = f"{Fore.WHITE}["
         BRACKET_R = f"{Fore.WHITE}]"
         POINTER = f"{Fore.MAGENTA}➤{Fore.RESET}"
