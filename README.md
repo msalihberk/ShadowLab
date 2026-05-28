@@ -29,13 +29,12 @@ By using this project, you agree to use it responsibly and ethically.
 
 ![ShadowLab Tool Demo](assets/demo.gif)
 
-Shadow is a security research project that demonstrates how Command & Control (C2) frameworks operate. It provides hands-on experience with:
+ShadowLab is a modular Command & Control (C2) framework developed for security research and educational purposes. The project demonstrates the lifecycle of remote administration tools, focusing on:
 
-- Socket programming and network communication
-- Cryptographic protocols
-- Windows system integration
-- Agent/implant development concepts
-- Red team tooling architecture
+- **Socket Programming:** Low-level TCP communication using length-prefixed data packets.
+- **Cryptography:** End-to-end encryption using the Fernet (AES-128) symmetric algorithm.
+- **Payload Architecture:** Implementation of both Staged (dropper) and Unstaged (full-featured) delivery methods.
+- **Windows Integration:** Interacting with the OS via WMI, Registry, and Subprocess modules.
 
 This project is ideal for:
 - Cybersecurity students learning about C2 infrastructure
@@ -49,35 +48,53 @@ This project is ideal for:
 
 | Feature | Description |
 |---------|-------------|
-| **Reverse TCP** | Client-initiated connection architecture |
-| **Remote Shell** | Remote command execution via secure channel |
-| **Microphone Recording** | Audio capture using sounddevice library |
-| **Webcam Capture** | Camera access using OpenCV |
-| **File Transfer** | Bidirectional file operations |
-| **Geolocation** | IP-based geolocation lookup |
-| **Persistence** | Windows registry-based persistence mechanisms |
-| **Keystroke Monitoring** | *(Coming soon)* Keyboard input monitoring |
-| **Connection Info** | Display client IP address and port |
+| **Reverse Connection** | Client-initiated TCP architecture for firewall circumvention |
+| **Interactive Shell** | Real-time remote command execution via encrypted channel |
+| **Encrypted C2 Channel** | End-to-end AES-128 encryption using Fernet symmetric keys |
+| **Audio Surveillance** | Remote microphone capture and exfiltration (sounddevice) |
+| **Visual Capture** | Remote webcam snapshot acquisition (OpenCV) |
+| **File Deployment** | Securely uploading files and tools from server to agent |
+| **Geolocation Lookup** | IP-based geographical mapping via ipinfo.io |
+| **Persistence Logic** | Windows Registry-based startup mechanisms for longevity |
+| **Remote UI Interaction** | Delivering toast notifications to the target via plyer |
+| **Screen Capture** | High-quality desktop screenshot acquisition (Pillow) |
+| **Modular Deployment** | Support for both Staged (dropper) and Unstaged (standalone) payloads |
+| **WMI Security Audit** | Detection of active Antivirus and Firewall products via WMI |
+| **Host Reconnaissance** | Comprehensive hardware, OS, and network metadata collection |
+| **Post-Exploitation** | *(In Development)* Advanced modules like Keylogging |
 
 ---
 
 ## 📁 Project Structure
 
 ```
-Shadow/
-├── Shadow.py           # Main C2 server
-├── mainclass/          # Core modules
-│   ├── builder.py      # Agent builder
-│   ├── encrypter.py    # Encryption utilities
-│   ├── options.py      # Configuration options
-│   ├── shell.py        # Command handlers
-│   └── system.py       # System utilities
-├── payloads/           # Agent/implant scripts
-├── postexploits/       # Post-exploitation modules (future)
-│   └── keystroke.py    # (In development - Pending security implementation)
-├── confs/              # Configuration files
-│   └── conf.json       # Auth & settings
-└── requirements.txt    # Python dependencies
+ShadowLab/
+├── Shadow.py             # Main C2 Server Application
+├── requirements.txt      # Python Package Dependencies
+├── LICENSE               # Project License File
+├── SECURITY.md           # Security Policy
+├── FAQS.md               # Frequently Asked Questions
+├── CONTRIBUTING.md       # Contribution Guidelines
+├── README.md             # Project Documentation
+├── assets/               # Media & Resources
+├── confs/                # Configuration Files
+│   └── conf.json         # Encryption Keys & Server Settings
+├── mainclass/            # Core Server Modules
+│   ├── builder.py        # Agent/Payload Builder
+│   ├── comm.py           # Network Communication Handler
+│   ├── encrypter.py      # Encryption & Decryption Utilities
+│   ├── pyi_progress.py   # PyInstaller Integration & Progress Display
+│   ├── options.py        # Command-Line Options & Menus
+│   ├── shell.py          # Remote Command Handlers
+│   ├── system.py         # System Utilities & Display
+├── payloads/             # Agent/Implant Code
+│   ├── payload.py        # Unstaged Payload (Full-Featured)
+│   └── payload_staged.py # Staged Payload (Lightweight)
+├── postexploits/         # Post-Exploitation Modules (Future)
+│   └── keystroke.py      # (In Development - Pending Security Review)
+├── photos/               # Screenshot & Image Storage Directory
+├── records/              # Audio Recording Storage Directory
+└── build/                # PyInstaller Build Output Directory
 ```
 
 ---
@@ -87,7 +104,7 @@ Shadow/
 ### 1. Clone the repository
 ```bash
 git clone https://github.com/msalihberk/ShadowLab.git
-cd Shadow
+cd ShadowLab
 ```
 
 ### 2. Install dependencies
@@ -99,13 +116,14 @@ pip install -r requirements.txt
 
 ## 💻 Usage
 
-### Step 1: Generate Auth Code
-Run the main menu and generate an authentication code from the options menu.
+### Step 1: Start the C2 Server
 
-### Step 2: Start the C2 Server
 ```bash
 python Shadow.py
 ```
+
+### Step 2: Generate Auth Code
+Run the server and select **Option 5 (Generate Conf)**. This initializes the `confs/conf.json` file, creating unique **Fernet Keys** and the **Auth Code** required for the secure agent-server handshake.
 
 ### Step 3: Configure Connection
 - Select option `3` to set your IP address
@@ -115,6 +133,7 @@ python Shadow.py
 - Choose option `1` to build an agent
 - Select format (Python or EXE)
 - Optionally bind to another application
+- Choose Staged or UnStaged mode
 
 ### Step 5: Start Listener
 - Choose option `2` to start listening
@@ -132,29 +151,33 @@ Once connected, use these commands:
 | `5` | Webcam Snapshot |
 | `6` | Get Location |
 | `7` | Remove Persistence |
-| `8` | Connection Info |
+| `8` | System Info |
+| `9` | Send Notification |
+| `10` | Get Screenshot |
+| `11` | Security Info |
 | `q` | Quit |
 
 ---
 
 ## 🔧 Requirements
 
-- **Python 3.x**
+- **Python 3.13.x**
 - colorama
 - cryptography
-- nuitka
+- pyinstaller
 - opencv-python
 - requests
 - sounddevice
 - wavio
 - pillow
 - pynput
+- simplejson
+- pyfiglet
+- wmi
+- plyer
 
 ---
 
 ## 📝 License
 
 This project is provided for educational and research purposes only. See [LICENSE](LICENSE) for details.
-
-
-

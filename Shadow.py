@@ -7,8 +7,8 @@ from mainclass.encrypter import *
 from mainclass.options import options
 import socket, os, struct
 
-ip = "127.0.0.1"
-port = "1234"
+ip = ""
+port = 0
 
 def shell(conn, address): shclass.shell(conn, address)
 def backdoor(conn, address): shclass.backdoor(conn, address)
