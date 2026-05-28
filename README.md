@@ -178,6 +178,19 @@ Once connected, use these commands:
 
 ---
 
+## 🔒 [Security Policy](SECURITY.md)
+Review our strict security protocols, ethical utilization boundaries, and our internal pipeline for **Responsible Disclosure**. Learn how to safely report any discovered framework vulnerabilities directly through GitHub's secure infrastructure without exposing telemetry data to the public.
+
+---
+
+## ❓ [Frequently Asked Questions](FAQS.md)
+Serves as an operational directory covering the structural mechanics of the framework. It defines the architectural scope of Monolithic (Unstaged) versus Multi-stage (Staged) delivery, safe testing methods for handling Antivirus/EDR exclusions in research labs, and technical details regarding our **AES-128** transport layer encryption.
+
+---
+
+## 🤝 [Contributing Guidelines](CONTRIBUTING.md)
+Want to improve the C2 framework? Read our technical contribution guidelines to understand our modular architectural standards, Python 3.13.x development environment rules, encryption key hygiene, and instructions on how to safely open a Pull Request.
+
 ## 📝 License
 
 This project is provided for educational and research purposes only. See [LICENSE](LICENSE) for details.
