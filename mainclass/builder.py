@@ -27,6 +27,7 @@ class builder():
                 
         except Exception as error:
             print(Fore.LIGHTRED_EX + f"[!] Error reading payload: {error}")
+            input("OK")
             return
 
         with open("temp.py", 'w', encoding='utf-8') as file:
@@ -67,4 +68,5 @@ class builder():
             input('OK')
         except Exception as e:
             print(Fore.LIGHTRED_EX + f"[-] Error during build: {e}")
+            input("OK")
         

@@ -137,6 +137,7 @@ def listen():
             print(Fore.LIGHTCYAN_EX + "[+] File Uploaded")
         except Exception as error:
             print(Fore.LIGHTRED_EX + f"[!] Error: {error}")
+            input("OK")
         input("OK")
         print(Fore.LIGHTGREEN_EX + '[+] Stage Uploaded!')
         input("OK")

@@ -13,6 +13,7 @@ class system():
                 return json.load(f)[data]
         except Exception as error:
             print(Fore.LIGHTRED_EX + f"[!] Error: {error}")
+            input("OK")
     
     def getJson():
         try:
@@ -20,6 +21,7 @@ class system():
                 return json.load(f)
         except Exception as error:
             print(Fore.LIGHTRED_EX + f"[!] Error: {error}")
+            input("OK")
     
     def setJson(data):
         try:
@@ -27,6 +29,7 @@ class system():
                 json.dump(data, f, indent=4)
         except Exception as error:
             print(Fore.LIGHTRED_EX + f"[!] Error: {error}")
+            input("OK")
         
     def printheader():
         font = system.getdata("header_font")
