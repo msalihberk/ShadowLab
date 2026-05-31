@@ -8,7 +8,7 @@
 ShadowLab is a C2 framework. The techniques used (socket communication, registry persistence, shell execution) are frequently used by malware. For research purposes, you should add your project folder and lab environment to your AV exclusion list.
 
 ### 3. Which Operating Systems are supported?
-- **Server:** Cross-platform (Windows, Linux, macOS) as long as Python 3.13 is installed.
+- **Server:** Cross-platform (Windows, Linux, macOS) as long as Python 3.13 is installed. (Note: Building the standalone .exe payload with PyInstaller requires a Windows environment.)
 - **Agent:** Currently optimized for **Windows**, as features like WMI security audits and Registry persistence are Windows-specific.
 
 ### 4. How is the communication secured?
