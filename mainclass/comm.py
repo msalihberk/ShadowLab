@@ -25,7 +25,9 @@ def recv_data(conn, decode=True):
         return dec.decode() if decode else dec
     except ConnectionError:
         print(Fore.LIGHTRED_EX + "[-] Session Closed!")
+        input("OK")
         raise
     except Exception as e:
         print(Fore.LIGHTRED_EX + f"[!] Error: {e}")
+        input("OK")
         raise

