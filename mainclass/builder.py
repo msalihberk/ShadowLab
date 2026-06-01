@@ -6,6 +6,8 @@ import os
 
 class builder():
     def build(type, ip, port, app='null', isstaged=False):
+        if not os.path.exists("build"):
+            os.makedirs("build")
         payload_file = "payloads/payload_staged.py" if isstaged else "payloads/payload.py"
         output_name = "agent_staged" if isstaged else "agent"
         

