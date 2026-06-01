@@ -110,10 +110,19 @@ cd ShadowLab
 ```
 
 ### 2. Install dependencies
+
+Choose the installation method that best fits your environment:
+
+**Standard Installation**
+For environments with unrestricted package management:
 ```bash
 pip install -r requirements.txt
 ```
-
+**Virtual Environment Installation**
+For strictly managed or isolation-required environments to avoid package conflicts:
+```bash
+python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt
+```
 ---
 
 ## 💻 Usage
