@@ -86,12 +86,12 @@ def shell(conn, address):
     try:
         while True:
             cmd = input(getInput(conn))
-            send_data(conn, cmd.encode())
             if not cmd.strip():
                 continue
             if cmd == 'exit':
                 system.clear_screen()
                 break
+            send_data(conn, cmd.encode())
             if cmd == 'clear':
                 system.clear_screen()
             try:
