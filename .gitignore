@@ -10,3 +10,10 @@ env/
 Thumbs.db
 .vscode/
 .idea/
+build/*
+records/*
+photos/*
+!build/.gitkeep
+!records/.gitkeep
+!photos/.gitkeep
+
