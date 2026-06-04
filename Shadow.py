@@ -38,7 +38,6 @@ def selectPort():
     system.printMenuOptions(ip, port)
     port = system.input(2)
 
-# TODO: Implement Staged/Unstaged payload delivery logic.
 def getPayloadOption():
     while True:
         system.clear_screen()
@@ -107,7 +106,7 @@ def listen():
     system.printheader()
     print(Fore.LIGHTCYAN_EX + "[+] Starting...")
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.bind((ip, int(port)))
+    s.bind(("0.0.0.0", int(port)))
     s.listen(1)
     conn, address = s.accept()
     print(Fore.LIGHTCYAN_EX + '[+] Waiting Session...')
