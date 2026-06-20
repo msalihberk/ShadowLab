@@ -9,43 +9,48 @@ init(autoreset=True)
 
 class system():
     def show_banner():
-        quotes = [
-            "Security is a process, not a product.",
-            "Think like an attacker, defend like a professional.",
-            "Trust, but verify.",
-            "The quieter you become, the more you can hear.",
-            "Cybersecurity is everyone's responsibility.",
-            "Never stop learning, never stop securing."
-        ]
-
-        print(Fore.YELLOW + Style.BRIGHT)
-        print("=" * 70)
-        print("SHADOWLAB SECURITY RESEARCH ENVIRONMENT")
-        print("=" * 70)
-
+        quotes = system.getJson("data").get("quotes", [])
         print(
             Fore.LIGHTCYAN_EX
-            + f"\n Security Quote: \"{random.choice(quotes)}\"\n"
+            + f"\n \"{random.choice(quotes)}\"\n"
         )
-    def getdata(data):
+    def getdata(data, source="conf"):
+        source_file = "conf.json"
+        if source == "data":
+            source_file = "data.json"
+        elif source not in ("conf", "conf.json", "data", "data.json"):
+            source_file = source if source.endswith(".json") else f"{source}.json"
+
         try:
-            with open("confs/conf.json", 'r') as f:
+            with open(os.path.join("confs", source_file), 'r') as f:
                 return json.load(f)[data]
         except Exception as error:
             print(Fore.LIGHTRED_EX + f"[!] Error: {error}")
             input("OK")
     
-    def getJson():
+    def getJson(source="conf"):
+        source_file = "conf.json"
+        if source == "data":
+            source_file = "data.json"
+        elif source not in ("conf", "conf.json", "data", "data.json"):
+            source_file = source if source.endswith(".json") else f"{source}.json"
+
         try:
-            with open("confs/conf.json", 'r') as f:
+            with open(os.path.join("confs", source_file), 'r') as f:
                 return json.load(f)
         except Exception as error:
             print(Fore.LIGHTRED_EX + f"[!] Error: {error}")
             input("OK")
     
-    def setJson(data):
+    def setJson(data, source="conf"):
+        source_file = "conf.json"
+        if source == "data":
+            source_file = "data.json"
+        elif source not in ("conf", "conf.json", "data", "data.json"):
+            source_file = source if source.endswith(".json") else f"{source}.json"
+
         try:
-            with open("confs/conf.json", 'w') as f:
+            with open(os.path.join("confs", source_file), 'w') as f:
                 json.dump(data, f, indent=4)
         except Exception as error:
             print(Fore.LIGHTRED_EX + f"[!] Error: {error}")
@@ -60,6 +65,7 @@ class system():
         header = pyfiglet.figlet_format(" SHADOW", font=font)
 
         print(Fore.CYAN + Style.BRIGHT + header)
+        system.show_banner()
         print(Fore.WHITE + line_char * line_size)
         
         author = "By Mustafa Salih Berk"
@@ -143,7 +149,7 @@ class system():
         status_ip = Fore.LIGHTGREEN_EX+ip+Fore.LIGHTCYAN_EX if ip else f"{Fore.RED}Not Selected{Fore.LIGHTCYAN_EX}"
         status_port = Fore.LIGHTGREEN_EX+port+Fore.LIGHTCYAN_EX if port != 0 else f"{Fore.RED}Not Selected{Fore.LIGHTCYAN_EX}"
         
-        print(Fore.LIGHTCYAN_EX + options.options.getMenuOptions(status_ip, status_port))
+        print(Fore.LIGHTCYAN_EX + options.options.getMenuOptions(status_ip, status_port) + "\n")
     
     def input(mode, port=0, ip=""):
         return input(options.options.getInputText(mode, port, ip))
