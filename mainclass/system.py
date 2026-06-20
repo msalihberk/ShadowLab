@@ -3,10 +3,30 @@ from . import options
 import pyfiglet
 import json
 import os
+import random
 
 init(autoreset=True)
 
 class system():
+    def show_banner():
+        quotes = [
+            "Security is a process, not a product.",
+            "Think like an attacker, defend like a professional.",
+            "Trust, but verify.",
+            "The quieter you become, the more you can hear.",
+            "Cybersecurity is everyone's responsibility.",
+            "Never stop learning, never stop securing."
+        ]
+
+        print(Fore.YELLOW + Style.BRIGHT)
+        print("=" * 70)
+        print("SHADOWLAB SECURITY RESEARCH ENVIRONMENT")
+        print("=" * 70)
+
+        print(
+            Fore.LIGHTCYAN_EX
+            + f"\n Security Quote: \"{random.choice(quotes)}\"\n"
+        )
     def getdata(data):
         try:
             with open("confs/conf.json", 'r') as f:
