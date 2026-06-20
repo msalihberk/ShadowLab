@@ -167,6 +167,7 @@ init(autoreset=True)
 system.clear_screen()
 
 def main():
+    system.show_banner()
     system.printDisclaimer()
     while True:
         system.clear_screen()
