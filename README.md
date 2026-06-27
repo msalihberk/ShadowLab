@@ -63,7 +63,7 @@ This project is ideal for:
 | **Modular Deployment** | Support for both Staged (dropper) and Unstaged (standalone) payloads |
 | **WMI Security Audit** | Detection of active Antivirus and Firewall products via WMI |
 | **Host Reconnaissance** | Comprehensive hardware, OS, and network metadata collection |
-| **Post-Exploitation** | *(In Development)* Advanced modules like Keylogging |
+| **Post-Exploitation** | Dynamic module staging and controller support for payload extensions 🚀 🔥 **NEW** |
 
 ---
 
@@ -89,11 +89,15 @@ ShadowLab/
 │   ├── options.py        # Command-Line Options & Menus
 │   ├── shell.py          # Remote Command Handlers
 │   ├── system.py         # System Utilities & Display
+├── modules/              # Post-Exploit module templates and controllers
+│   └── Keylogger/
+│       ├── controller.py # Controller interface for remote keylogger modules
+│       ├── config.json   # Keylogger module metadata and settings
+│       ├── template.json # Template placeholders for module generation
+│       └── keylogger.py  # Keylogger payload template
 ├── payloads/             # Agent/Implant Code
 │   ├── payload.py        # Unstaged Payload (Full-Featured)
 │   └── payload_staged.py # Staged Payload (Lightweight)
-├── postexploits/         # Post-Exploitation Modules (Future)
-│   └── keystroke.py      # (In Development - Pending Security Review)
 ├── photos/               # Screenshot & Image Storage Directory
 ├── records/              # Audio Recording Storage Directory
 └── build/                # PyInstaller Build Output Directory
@@ -166,6 +170,7 @@ Once connected, use these commands:
 | `9` | Send Notification |
 | `10` | Get Screenshot |
 | `11` | Security Info |
+| `12` | Manage Post Exploits |
 | `q` | Quit |
 
 ---
