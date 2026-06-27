@@ -55,6 +55,17 @@ class system():
         except Exception as error:
             print(Fore.LIGHTRED_EX + f"[!] Error: {error}")
             input("OK")
+    
+    def setData(data, value):
+        old = system.getJson()
+
+        try:
+            old[data] = value
+            system.setJson(old)
+        except Exception as e:
+            print(Fore.LIGHTRED_EX + f"[!] Error: {e}")
+            input("OK")
+        
         
     def printheader():
         font = system.getdata("header_font")
@@ -146,8 +157,8 @@ class system():
             print(Fore.LIGHTCYAN_EX + options.options.createMenu_options3)
 
     def printMenuOptions(ip, port):
-        status_ip = Fore.LIGHTGREEN_EX+ip+Fore.LIGHTCYAN_EX if ip else f"{Fore.RED}Not Selected{Fore.LIGHTCYAN_EX}"
-        status_port = Fore.LIGHTGREEN_EX+port+Fore.LIGHTCYAN_EX if port != 0 else f"{Fore.RED}Not Selected{Fore.LIGHTCYAN_EX}"
+        status_ip = Fore.LIGHTGREEN_EX+ip+Fore.LIGHTCYAN_EX if ip != "" else f"{Fore.RED}Not Selected{Fore.LIGHTCYAN_EX}"
+        status_port = Fore.LIGHTGREEN_EX+port+Fore.LIGHTCYAN_EX if port != "" else f"{Fore.RED}Not Selected{Fore.LIGHTCYAN_EX}"
         
         print(Fore.LIGHTCYAN_EX + options.options.getMenuOptions(status_ip, status_port) + "\n")
     

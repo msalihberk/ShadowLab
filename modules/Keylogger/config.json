@@ -1,0 +1,14 @@
+{
+    "name": "KEYLOGGER",
+    "description": "Keylogger module template with configurable placeholders.",
+    "file_name": "keylogger.py",
+    "placeholders": {
+        "__ipaddr__": "Agent listener IP",
+        "12345": "Agent listener port"
+    },
+    "controller": {
+        "enabled": true,
+        "label": "Keylogger Controller",
+        "description": "Interactive keylogger control interface"
+    }
+}
