@@ -2,6 +2,7 @@
 ![Python Version](https://img.shields.io/badge/python-3.13.x-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Purpose](https://img.shields.io/badge/purpose-educational-orange.svg)
+![New Feature](https://img.shields.io/badge/NEW-Post--Exploit%20Modules-red.svg)
 > Python-based C2 Framework - Security Research Project
 
 ---
@@ -31,11 +32,28 @@ By using this project, you agree to use it responsibly and ethically.
 
 > 📖 **Read the Technical Analysis:** [ShadowLab Architecture and Design](https://meetcyber.net/shadowlab-a-modular-c2-framework-architecture-built-with-python-for-modern-cybersecurity-research-7acb496e6784)
 
-ShadowLab is a modular Command & Control (C2) framework developed for security research and educational purposes. The project demonstrates the lifecycle of remote administration tools, focusing on:
+ShadowLab is a modular Command & Control (C2) framework built for hands-on cybersecurity research, red team lab practice, and defender education. It brings together encrypted transport, staged and unstaged payload generation, host reconnaissance, remote interaction, and a new extensible post-exploitation layer in one focused Python project.
+
+### 🔥 NEW: Post-Exploit Module System
+
+ShadowLab now includes a dedicated **Post-Exploit** workflow for extending an active session after the initial connection is established.
+
+| Capability | What it adds |
+|------------|--------------|
+| **Dynamic Module Discovery** | Modules placed under `modules/` are discovered from their own `config.json` files |
+| **Template-Based Payloads** | Module placeholders such as listener IP, port, and internal keys can be filled at runtime |
+| **Agent-Side Registration** | Post-exploit modules can be staged, registered, and started through the encrypted session |
+| **Controller Support** | Modules can expose their own server-side controller for interactive workflows |
+| **Included Example** | Ships with a configurable `KEYLOGGER` module template and controller |
+
+> Start a session, choose **Option 12 - Manage Post Exploits**, select a module, and launch it directly through the active agent channel.
+
+ShadowLab demonstrates the lifecycle of remote administration tools, focusing on:
 
 - **Socket Programming:** Low-level TCP communication using length-prefixed data packets.
 - **Cryptography:** End-to-end encryption using the Fernet (AES-128) symmetric algorithm.
 - **Payload Architecture:** Implementation of both Staged (dropper) and Unstaged (full-featured) delivery methods.
+- **Post-Exploitation Modules:** Runtime module staging, template replacement, registration, and controller-backed execution.
 - **Windows Integration:** Interacting with the OS via WMI, Registry, and Subprocess modules.
 
 This project is ideal for:
@@ -63,7 +81,7 @@ This project is ideal for:
 | **Modular Deployment** | Support for both Staged (dropper) and Unstaged (standalone) payloads |
 | **WMI Security Audit** | Detection of active Antivirus and Firewall products via WMI |
 | **Host Reconnaissance** | Comprehensive hardware, OS, and network metadata collection |
-| **Post-Exploitation** | Dynamic module staging and controller support for payload extensions 🚀 🔥 **NEW** |
+| 🔥 **NEW: Post-Exploitation Modules** | Dynamic module discovery, template-based staging, encrypted agent registration, and controller-backed payload extensions |
 
 ---
 
@@ -99,7 +117,7 @@ ShadowLab/
 │   ├── payload.py        # Unstaged Payload (Full-Featured)
 │   └── payload_staged.py # Staged Payload (Lightweight)
 ├── photos/               # Screenshot & Image Storage Directory
-├── records/              # Audio Recording Storage Directory
+├── records/              # Audio Recording and Post Exploit Log Storage Directory
 └── build/                # PyInstaller Build Output Directory
 ```
 
@@ -170,8 +188,24 @@ Once connected, use these commands:
 | `9` | Send Notification |
 | `10` | Get Screenshot |
 | `11` | Security Info |
-| `12` | Manage Post Exploits |
+| `12` | 🔥 Manage Post Exploits |
 | `q` | Quit |
+
+### 🔥 Step 7: Launch Post-Exploit Modules
+
+The new post-exploit manager turns `modules/` into an extension point for active sessions.
+
+1. Choose command `12` from the connected agent menu
+2. Select a discovered module such as `KEYLOGGER`
+3. Fill runtime template values when prompted
+4. Register and start the module through the encrypted C2 channel
+5. Open the module controller when available for interactive output
+
+Current included module:
+
+| Module | Description | Controller |
+|--------|-------------|------------|
+| `KEYLOGGER` | Configurable post-exploit keylogger module template | Yes |
 
 ---
 
