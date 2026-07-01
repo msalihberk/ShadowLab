@@ -22,8 +22,9 @@ We actively monitor and provide maintenance patches only for the latest stable r
 
 | Version | Supported |
 | ------- | --------- |
-| v1.3.x  | ✅ Yes    |
-| < v1.3  | ❌ No     |
+| v1.4.x  | ✅ Yes    |
+| v1.3.3  | ✅ Yes    |
+| < v1.3.3  | ❌ No     |
 
 ## Best Practices for Users
 - Always run the server and agents in an isolated laboratory environment (VMs).
