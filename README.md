@@ -12,11 +12,11 @@
 
 <p>
 
-[Overview](#overview) •
-[Features](#features) •
-[Installation](#installation) •
-[Usage](#usage) •
-[Documentation](#documentation) •
+[Overview](#-overview) •
+[Features](#-features) •
+[Installation](#-installation) •
+[Usage](#-usage) •
+[Documentation](#-documentation) •
 [Roadmap](ROADMAP.md)
 
 </p>
