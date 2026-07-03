@@ -50,8 +50,6 @@
 >
 > **ShadowLab must never be used against systems without explicit authorization.**
 
----
-
 # 🚀 Overview
 
 ShadowLab is a modular **Command & Control (C2)** framework written entirely in Python for studying the engineering principles behind modern remote administration infrastructures.
@@ -66,7 +64,6 @@ Every component is built with education in mind, emphasizing software architectu
 
 </div>
 
----
 
 # ✨ Highlights
 
@@ -83,9 +80,7 @@ Every component is built with education in mind, emphasizing software architectu
 
 Interested in the engineering decisions behind ShadowLab?
 
-📖 **Technical Analysis**
-
-https://meetcyber.net/shadowlab-a-modular-c2-framework-architecture-built-with-python-for-modern-cybersecurity-research-7acb496e6784
+➡️ [**Read the full technical analysis (Medium)**](https://meetcyber.net/shadowlab-a-modular-c2-framework-architecture-built-with-python-for-modern-cybersecurity-research-7acb496e6784)
 
 ---
 
@@ -103,7 +98,7 @@ ShadowLab provides a modular set of capabilities that demonstrate the core build
 | 🧩 **Post-Exploitation** | Dynamic module discovery, runtime template injection, encrypted module registration, controller-backed modules |
 | 🏗️ **Architecture** | Modular codebase, configurable components, educational implementation, extensible framework |
 
----
+
 
 # 📁 Project Structure
 
@@ -130,7 +125,7 @@ ShadowLab/
 └── CONTRIBUTING.md
 ```
 
----
+
 
 # 📦 Installation
 
@@ -173,7 +168,7 @@ python Shadow.py
 
 If the application starts successfully, the installation is complete.
 
----
+
 
 # 💻 Usage
 
@@ -276,7 +271,7 @@ Once an agent connects, ShadowLab provides an interactive management interface.
 | `12` | Post-Exploitation Manager |
 | `q` | Close Session |
 
----
+
 
 ## 6. Deploy Post-Exploitation Modules
 
@@ -305,7 +300,7 @@ Interactive Controller
 
 The framework currently ships with a sample **KEYLOGGER** module, while additional modules can be added without modifying the core framework thanks to the dynamic module architecture.
 
----
+
 
 # 📚 Documentation
 
@@ -318,7 +313,7 @@ Additional documentation is available for users who want to explore the project 
 | `FAQS.md` | Frequently asked questions |
 | `CONTRIBUTING.md` | Contribution guidelines |
 
----
+
 
 # 📝 License
 
@@ -345,5 +340,11 @@ If ShadowLab helps your learning or research, consider giving the repository a *
 <br>
 
 Made with ❤️ for the cybersecurity education community.
+
+<br><br>
+
+<sub>
+Banner artwork created with the assistance of ChatGPT (OpenAI).
+</sub>
 
 </div>
