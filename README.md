@@ -321,6 +321,9 @@ ShadowLab is released under the **MIT License**.
 
 See the [`LICENSE`](LICENSE) file for the complete license text.
 
+## Author
+Developed and maintained by **Mustafa Salih Berk**.
+
 ---
 
 > [!WARNING]
