@@ -2,7 +2,7 @@ from cryptography.fernet import Fernet
 from cli.system import system
 
 
-_key = system.getdata("KEY")
+_key = system.getdata("KEY", "user_data")
 if isinstance(_key, str):
     _key = _key.encode()
 fernet = Fernet(_key)

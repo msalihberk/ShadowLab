@@ -1,5 +1,5 @@
 import asyncio
-from connection_protocol import *
+from .connection_protocol import *
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException
 

