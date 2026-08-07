@@ -21,7 +21,7 @@ Yes, provided you have explicit written consent from the target organization. Ho
 Please check the `CONTRIBUTING.md` file and open a detailed issue on the GitHub repository including your OS version and Python logs.
 
 ### 7. How do I change the encryption keys?
-Use **Option 5 (Generate Conf)** in the main menu. This will regenerate the `confs/conf.json` file with a new Fernet key and auth token.
+Use **Option 5 (Generate Conf)** in the main menu. This will regenerate the `confs/user_data.json` file with a new Fernet key and auth token.
 
 ### 8. Why is PyInstaller required?
 PyInstaller is used to compile the Python agent into a standalone Windows executable (.exe), allowing it to run on systems without a Python interpreter installed.

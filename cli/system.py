@@ -8,7 +8,29 @@ import random
 
 init(autoreset=True)
 
+USER_DATA_KEYS = {"KEY", "authcode", "recent_ip", "recent_port"}
+
 class system():
+    def _normalize_source(source):
+        if source in ("conf", "conf.json"):
+            return "conf.json"
+        if source in ("data", "data.json"):
+            return "data.json"
+        if source in ("user_data", "user_data.json"):
+            return "user_data.json"
+        return source if source.endswith(".json") else f"{source}.json"
+
+    def _resolve_source(source, data=None):
+        if source in ("conf", "conf.json"):
+            if data in USER_DATA_KEYS:
+                return "user_data"
+            return "conf"
+        if source in ("data", "data.json"):
+            return "data"
+        if source in ("user_data", "user_data.json"):
+            return "user_data"
+        return source
+
     def show_banner():
         quotes = system.getJson("data").get("quotes", [])
         print(
@@ -16,11 +38,8 @@ class system():
             + f"\n \"{random.choice(quotes)}\"\n"
         )
     def getdata(data, source="conf"):
-        source_file = "conf.json"
-        if source == "data":
-            source_file = "data.json"
-        elif source not in ("conf", "conf.json", "data", "data.json"):
-            source_file = source if source.endswith(".json") else f"{source}.json"
+        source_name = system._resolve_source(source, data)
+        source_file = system._normalize_source(source_name)
 
         try:
             with open(get_project_path("confs", source_file), 'r') as f:
@@ -30,11 +49,7 @@ class system():
             input("OK")
     
     def getJson(source="conf"):
-        source_file = "conf.json"
-        if source == "data":
-            source_file = "data.json"
-        elif source not in ("conf", "conf.json", "data", "data.json"):
-            source_file = source if source.endswith(".json") else f"{source}.json"
+        source_file = system._normalize_source(source)
 
         try:
             with open(get_project_path("confs", source_file), 'r') as f:
@@ -44,11 +59,7 @@ class system():
             input("OK")
     
     def setJson(data, source="conf"):
-        source_file = "conf.json"
-        if source == "data":
-            source_file = "data.json"
-        elif source not in ("conf", "conf.json", "data", "data.json"):
-            source_file = source if source.endswith(".json") else f"{source}.json"
+        source_file = system._normalize_source(source)
 
         try:
             with open(get_project_path("confs", source_file), 'w') as f:
@@ -57,12 +68,13 @@ class system():
             print(Fore.LIGHTRED_EX + f"[!] Error: {error}")
             input("OK")
     
-    def setData(data, value):
-        old = system.getJson()
+    def setData(data, value, source="conf"):
+        source_name = system._resolve_source(source, data)
+        old = system.getJson(source_name)
 
         try:
             old[data] = value
-            system.setJson(old)
+            system.setJson(old, source_name)
         except Exception as e:
             print(Fore.LIGHTRED_EX + f"[!] Error: {e}")
             input("OK")

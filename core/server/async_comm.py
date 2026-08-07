@@ -4,12 +4,8 @@ from typing import Any
 
 from colorama import Fore
 
-try:
-    from core.crypto.encrypter import encrypt, decrypt
-    from core.server.protocol import decode_json, encode_json
-except ImportError:
-    from encrypter import encrypt, decrypt
-    from core.server.protocol import decode_json, encode_json
+from core.crypto.encrypter import encrypt, decrypt
+from core.server.protocol import decode_json, encode_json
 
 
 HEADER_SIZE = 4

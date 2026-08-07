@@ -11,3 +11,6 @@ simplejson
 pyfiglet
 wmi
 plyer
+fastapi
+uvicorn
+aiofiles

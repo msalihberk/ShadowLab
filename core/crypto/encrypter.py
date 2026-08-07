@@ -11,8 +11,8 @@ def encrypt(data): return fernet.encrypt(data)
 def decrypt(data): return fernet.decrypt(data)
 
 def generate():
-    oldData = system.getJson()
+    oldData = system.getJson("user_data")
     oldData["KEY"] = Fernet.generate_key().decode()
     oldData["authcode"] = Fernet.generate_key().decode()
     
-    system.setJson(oldData)
+    system.setJson(oldData, "user_data")
