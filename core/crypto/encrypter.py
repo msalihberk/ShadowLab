@@ -1,5 +1,5 @@
 from cryptography.fernet import Fernet
-from .system import system
+from cli.system import system
 
 
 _key = system.getdata("KEY")

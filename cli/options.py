@@ -61,7 +61,10 @@ class options():
 | SECURITY INFO |
               
 {Fore.MAGENTA}{Style.BRIGHT}---FIREWALL---''')
-        for f in data["Firewall"]:
+        
+        firewall_data = data["Firewall"]
+
+        for f in firewall_data:
             print(f'''
 {Fore.LIGHTBLUE_EX}displayName: {Fore.LIGHTCYAN_EX}{f["displayName"]} 
 {Fore.LIGHTBLUE_EX}instanceGuid: {Fore.LIGHTCYAN_EX}{f["instanceGuid"]} 
@@ -69,10 +72,13 @@ class options():
 {Fore.LIGHTBLUE_EX}pathToSignedReportingExe: {Fore.LIGHTCYAN_EX}{f["pathToSignedReportingExe"]} 
 {Fore.LIGHTBLUE_EX}productState: {Fore.LIGHTCYAN_EX}{f["productState"]} 
 {Fore.LIGHTBLUE_EX}timestamp: {Fore.LIGHTCYAN_EX}{f["timestamp"]}''')
+            
         print(f'''{Fore.MAGENTA}{Style.BRIGHT}
 
 ---ANTIVIRUS---''')
-        for f in data["Antivirus"]:
+        av_data = data["Antivirus"]
+
+        for f in av_data:
             print(f'''
 {Fore.LIGHTBLUE_EX}displayName: {Fore.LIGHTCYAN_EX}{f["displayName"]} 
 {Fore.LIGHTBLUE_EX}instanceGuid: {Fore.LIGHTCYAN_EX}{f["instanceGuid"]} 
@@ -82,17 +88,19 @@ class options():
 {Fore.LIGHTBLUE_EX}timestamp: {Fore.LIGHTCYAN_EX}{f["timestamp"]}''')
         
     def getSystemInfoText(data):
+        display_data = data
+
         text = f'''{Style.BRIGHT}{Fore.GREEN} 
 | SYSTEM INFO |{Style.NORMAL}
-{Fore.LIGHTBLUE_EX}Platform:{Fore.LIGHTCYAN_EX} {data["Platform"]}
-{Fore.LIGHTBLUE_EX}Platform Release:{Fore.LIGHTCYAN_EX} {data["Platform Release"]}
-{Fore.LIGHTBLUE_EX}Platform Version:{Fore.LIGHTCYAN_EX} {data["Platform Version"]}
-{Fore.LIGHTBLUE_EX}Architecture:{Fore.LIGHTCYAN_EX} {data["Architecture"]}
-{Fore.LIGHTBLUE_EX}Hostname:{Fore.LIGHTCYAN_EX} {data["Hostname"]}
-{Fore.LIGHTBLUE_EX}IP Address:{Fore.LIGHTCYAN_EX} {data["IP Address"]}
-{Fore.LIGHTBLUE_EX}Processor:{Fore.LIGHTCYAN_EX} {data["Processor"]}
-{Fore.LIGHTBLUE_EX}Python Build:{Fore.LIGHTCYAN_EX} {data["Python Build"]}
-{Fore.LIGHTBLUE_EX}Python Version:{Fore.LIGHTCYAN_EX} {data["Python Version"]}
+{Fore.LIGHTBLUE_EX}Platform:{Fore.LIGHTCYAN_EX} {display_data["Platform"]}
+{Fore.LIGHTBLUE_EX}Platform Release:{Fore.LIGHTCYAN_EX} {display_data["Platform Release"]}
+{Fore.LIGHTBLUE_EX}Platform Version:{Fore.LIGHTCYAN_EX} {display_data["Platform Version"]}
+{Fore.LIGHTBLUE_EX}Architecture:{Fore.LIGHTCYAN_EX} {display_data["Architecture"]}
+{Fore.LIGHTBLUE_EX}Hostname:{Fore.LIGHTCYAN_EX} {display_data["Hostname"]}
+{Fore.LIGHTBLUE_EX}IP Address:{Fore.LIGHTCYAN_EX} {display_data["IP Address"]}
+{Fore.LIGHTBLUE_EX}Processor:{Fore.LIGHTCYAN_EX} {display_data["Processor"]}
+{Fore.LIGHTBLUE_EX}Python Build:{Fore.LIGHTCYAN_EX} {display_data["Python Build"]}
+{Fore.LIGHTBLUE_EX}Python Version:{Fore.LIGHTCYAN_EX} {display_data["Python Version"]}
 '''
         return text
     def getInputText(mode, port=0, ip=""):
@@ -158,8 +166,6 @@ class options():
         elif mode == 14:
             SLOT1 += options.slot[13]
             SLOT2 += options.slot[16]
-
-
 
         SHADOW  = f"{Fore.MAGENTA}{Style.BRIGHT}SHADOW"
         DIVIDER = f"{Fore.WHITE}│"

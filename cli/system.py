@@ -1,5 +1,6 @@
 from colorama import Fore, init, Style
-from . import options
+from cli import options
+from core.utils.paths import get_project_path
 import pyfiglet
 import json
 import os
@@ -22,7 +23,7 @@ class system():
             source_file = source if source.endswith(".json") else f"{source}.json"
 
         try:
-            with open(os.path.join("confs", source_file), 'r') as f:
+            with open(get_project_path("confs", source_file), 'r') as f:
                 return json.load(f)[data]
         except Exception as error:
             print(Fore.LIGHTRED_EX + f"[!] Error: {error}")
@@ -36,7 +37,7 @@ class system():
             source_file = source if source.endswith(".json") else f"{source}.json"
 
         try:
-            with open(os.path.join("confs", source_file), 'r') as f:
+            with open(get_project_path("confs", source_file), 'r') as f:
                 return json.load(f)
         except Exception as error:
             print(Fore.LIGHTRED_EX + f"[!] Error: {error}")
@@ -50,7 +51,7 @@ class system():
             source_file = source if source.endswith(".json") else f"{source}.json"
 
         try:
-            with open(os.path.join("confs", source_file), 'w') as f:
+            with open(get_project_path("confs", source_file), 'w') as f:
                 json.dump(data, f, indent=4)
         except Exception as error:
             print(Fore.LIGHTRED_EX + f"[!] Error: {error}")

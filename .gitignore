@@ -2,6 +2,7 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
+*.exe
 venv/
 .venv/
 env/
@@ -10,10 +11,12 @@ env/
 Thumbs.db
 .vscode/
 .idea/
-build/*
-records/*
-photos/*
-!build/.gitkeep
-!records/.gitkeep
-!photos/.gitkeep
+storage/binaries/*
+storage/loot/records/*
+storage/loot/photos/*
+storage/loot/logs/*
+!storage/binaries/.gitkeep
+!storage/loot/logs/.gitkeep
+!storage/loot/records/.gitkeep
+!storage/loot/photos/.gitkeep
 
