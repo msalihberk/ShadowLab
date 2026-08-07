@@ -48,7 +48,10 @@ async def send_json(writer: asyncio.StreamWriter, data: Any):
 
 
 async def recv_json(reader: asyncio.StreamReader) -> Any:
-    return decode_json(await recv_data(reader, decode=False))
+    # TODO test
+    d = await recv_data(reader, decode=False)
+    print(d)
+    return decode_json(d)
 
 
 async def async_send(writer: asyncio.StreamWriter, data: Any):
