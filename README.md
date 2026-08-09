@@ -1,246 +1,353 @@
+<div align="center">
+
+<img src="assets/banner.png" alt="ShadowLab Banner" width="100%"/>
+
 # ShadowLab
-![Python Version](https://img.shields.io/badge/python-3.13.x-blue.svg)
-![License](https://img.shields.io/badge/license-MIT-green.svg)
-![Purpose](https://img.shields.io/badge/purpose-educational-orange.svg)
-![New Feature](https://img.shields.io/badge/NEW-Post--Exploit%20Modules-red.svg)
-> Python-based C2 Framework - Security Research Project
+
+### Modern Educational Command & Control Framework for Cybersecurity Research
+
+*Learn how modern C2 infrastructures are engineered — safely, ethically, and from the inside out.*
+
+<br>
+
+<p>
+
+[Overview](#-overview) •
+[Features](#-features) •
+[Installation](#-installation) •
+[Usage](#-usage) •
+[Documentation](#-documentation) •
+[Roadmap](ROADMAP.md)
+
+</p>
+
+<br>
+
+[![Stars](https://img.shields.io/github/stars/msalihberk/ShadowLab?style=for-the-badge)](https://github.com/msalihberk/ShadowLab/stargazers)
+[![Forks](https://img.shields.io/github/forks/msalihberk/ShadowLab?style=for-the-badge)](https://github.com/msalihberk/ShadowLab/network/members)
+[![Python](https://img.shields.io/badge/Python-3.13-blue?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
+[![Platform](https://img.shields.io/badge/Platform-Windows-blue?style=for-the-badge&logo=windows)]()
+[![License](https://img.shields.io/badge/License-MIT-success?style=for-the-badge)](LICENSE)
+[![Status](https://img.shields.io/badge/Status-Active%20Development-orange?style=for-the-badge)]()
+
+<br><br>
+
+**🔐 Encrypted Communications** •
+**📦 Payload Builder** •
+**🧩 Modular Post-Exploitation** •
+**⚡ Runtime Module Loading** •
+**🎓 Educational Research**
+
+</div>
 
 ---
 
-## ⚠️ Important Disclaimer
+> [!IMPORTANT]
+>
+> **ShadowLab is an educational Command & Control (C2) framework designed exclusively for cybersecurity research, authorized security assessments, and isolated laboratory environments.**
+>
+> Rather than serving as an offensive toolkit, the project demonstrates how modern C2 infrastructures are engineered through transparent implementations of encrypted communications, payload generation, Windows internals, and modular post-exploitation workflows.
+>
+> **ShadowLab must never be used against systems without explicit authorization.**
 
-**THIS PROJECT IS FOR EDUCATIONAL AND AUTHORIZED SECURITY RESEARCH PURPOSES ONLY.**
+# 🚀 Overview
 
-This software is designed to help cybersecurity professionals, researchers, and students understand:
-- Client-server architecture and network protocols
-- Encryption and secure communication
-- System-level programming concepts
-- Red team operations and adversary emulation
+ShadowLab is a modular **Command & Control (C2)** framework written entirely in Python for studying the engineering principles behind modern remote administration infrastructures.
 
-**Usage Restrictions:**
-- Only use on systems you own or have explicit written authorization to test
-- Unauthorized access to computer systems is illegal and may result in criminal prosecution
-- The author assumes no liability for any misuse or damage caused by this tool
+The project provides a transparent implementation of encrypted communications, staged and unstaged payload generation, Windows integration, and runtime post-exploitation modules, allowing students, researchers, and security professionals to explore how contemporary C2 frameworks are designed inside controlled laboratory environments.
 
-By using this project, you agree to use it responsibly and ethically.
+Every component is built with education in mind, emphasizing software architecture, defensive understanding, ethical research, and practical cybersecurity learning instead of real-world offensive deployment.
 
----
+<div align="center">
 
-## 📋 Overview
+<img src="assets/demo.gif" width="95%" alt="ShadowLab Demo"/>
 
-![ShadowLab Tool Demo](assets/demo.gif)
+</div>
 
-> 📖 **Read the Technical Analysis:** [ShadowLab Architecture and Design](https://meetcyber.net/shadowlab-a-modular-c2-framework-architecture-built-with-python-for-modern-cybersecurity-research-7acb496e6784)
 
-ShadowLab is a modular Command & Control (C2) framework built for hands-on cybersecurity research, red team lab practice, and defender education. It brings together encrypted transport, staged and unstaged payload generation, host reconnaissance, remote interaction, and a new extensible post-exploitation layer in one focused Python project.
+# ✨ Highlights
 
-### 🔥 NEW: Post-Exploit Module System
-
-ShadowLab now includes a dedicated **Post-Exploit** workflow for extending an active session after the initial connection is established.
-
-| Capability | What it adds |
-|------------|--------------|
-| **Dynamic Module Discovery** | Modules placed under `modules/` are discovered from their own `config.json` files |
-| **Template-Based Payloads** | Module placeholders such as listener IP, port, and internal keys can be filled at runtime |
-| **Agent-Side Registration** | Post-exploit modules can be staged, registered, and started through the encrypted session |
-| **Controller Support** | Modules can expose their own server-side controller for interactive workflows |
-| **Included Example** | Ships with a configurable `KEYLOGGER` module template and controller |
-
-> Start a session, choose **Option 12 - Manage Post Exploits**, select a module, and launch it directly through the active agent channel.
-
-ShadowLab demonstrates the lifecycle of remote administration tools, focusing on:
-
-- **Socket Programming:** Low-level TCP communication using length-prefixed data packets.
-- **Cryptography:** End-to-end encryption using the Fernet (AES-128) symmetric algorithm.
-- **Payload Architecture:** Implementation of both Staged (dropper) and Unstaged (full-featured) delivery methods.
-- **Post-Exploitation Modules:** Runtime module staging, template replacement, registration, and controller-backed execution.
-- **Windows Integration:** Interacting with the OS via WMI, Registry, and Subprocess modules.
-
-This project is ideal for:
-- Cybersecurity students learning about C2 infrastructure
-- Security researchers studying attack methodologies
-- Red team professionals practicing adversary emulation
-- Defenders understanding threats to build better defenses
+- 🔐 AES-128 Fernet encrypted communication
+- 📦 Staged & unstaged payload generation
+- 🧩 Dynamic post-exploitation module system
+- 💻 Interactive encrypted remote shell
+- 🖥 Windows reconnaissance through WMI
+- 🎓 Built specifically for cybersecurity education
 
 ---
 
-## 🚀 Features
+## 📚 Architecture
 
-| Feature | Description |
-|---------|-------------|
-| **Reverse Connection** | Client-initiated TCP architecture for firewall circumvention |
-| **Interactive Shell** | Real-time remote command execution via encrypted channel |
-| **Encrypted C2 Channel** | End-to-end AES-128 encryption using Fernet symmetric keys |
-| **Audio Surveillance** | Remote microphone capture and exfiltration (sounddevice) |
-| **Visual Capture** | Remote webcam snapshot acquisition (OpenCV) |
-| **File Deployment** | Securely uploading files and tools from server to agent |
-| **Geolocation Lookup** | IP-based geographical mapping via ipinfo.io |
-| **Persistence Logic** | Windows Registry-based startup mechanisms for longevity |
-| **Remote UI Interaction** | Delivering toast notifications to the target via plyer |
-| **Screen Capture** | High-quality desktop screenshot acquisition (Pillow) |
-| **Modular Deployment** | Support for both Staged (dropper) and Unstaged (standalone) payloads |
-| **WMI Security Audit** | Detection of active Antivirus and Firewall products via WMI |
-| **Host Reconnaissance** | Comprehensive hardware, OS, and network metadata collection |
-| 🔥 **NEW: Post-Exploitation Modules** | Dynamic module discovery, template-based staging, encrypted agent registration, and controller-backed payload extensions |
+Interested in the engineering decisions behind ShadowLab?
+
+➡️ [**Read the full technical analysis (Medium)**](https://meetcyber.net/shadowlab-a-modular-c2-framework-architecture-built-with-python-for-modern-cybersecurity-research-7acb496e6784)
 
 ---
 
-## 📁 Project Structure
+# 🚀 Features
 
-```
+ShadowLab provides a modular set of capabilities that demonstrate the core building blocks of a modern Command & Control framework while maintaining a strong focus on education, transparency, and software engineering.
+
+| Category | Features |
+| :--- | :--- |
+| 🔐 **Communication** | AES-128 Fernet encrypted communication, secure authentication, length-prefixed TCP transport |
+| 📦 **Payload Builder** | Staged & unstaged payload generation, executable binding, automated configuration embedding |
+| 💻 **Remote Interaction** | Interactive remote shell, file upload, desktop notifications |
+| 📷 **Intelligence Collection** | System information, screenshots, webcam capture, microphone recording, geolocation |
+| 🖥️ **Windows Integration** | WMI enumeration, Registry persistence, security product detection |
+| 🧩 **Post-Exploitation** | Dynamic module discovery, runtime template injection, encrypted module registration, controller-backed modules |
+| 🏗️ **Architecture** | Modular codebase, configurable components, educational implementation, extensible framework |
+
+
+
+# 📁 Project Structure
+
+The repository is organized into modular components, separating the framework core, payload generation, configuration management, and post-exploitation modules.
+
+```text
 ShadowLab/
-├── Shadow.py             # Main C2 Server Application
-├── requirements.txt      # Python Package Dependencies
-├── LICENSE               # Project License File
-├── SECURITY.md           # Security Policy
-├── FAQS.md               # Frequently Asked Questions
-├── CONTRIBUTING.md       # Contribution Guidelines
-├── README.md             # Project Documentation
-├── assets/               # Media & Resources
-├── confs/                # Configuration Files
-│   └── conf.json         # Encryption Keys & Server Settings
-├── mainclass/            # Core Server Modules
-│   ├── builder.py        # Agent/Payload Builder
-│   ├── comm.py           # Network Communication Handler
-│   ├── encrypter.py      # Encryption & Decryption Utilities
-│   ├── pyi_progress.py   # PyInstaller Integration & Progress Display
-│   ├── options.py        # Command-Line Options & Menus
-│   ├── shell.py          # Remote Command Handlers
-│   ├── system.py         # System Utilities & Display
-├── modules/              # Post-Exploit module templates and controllers
-│   └── Keylogger/
-│       ├── controller.py # Controller interface for remote keylogger modules
-│       ├── config.json   # Keylogger module metadata and settings
-│       ├── template.json # Template placeholders for module generation
-│       └── keylogger.py  # Keylogger payload template
-├── payloads/             # Agent/Implant Code
-│   ├── payload.py        # Unstaged Payload (Full-Featured)
-│   └── payload_staged.py # Staged Payload (Lightweight)
-├── photos/               # Screenshot & Image Storage Directory
-├── records/              # Audio Recording and Post Exploit Log Storage Directory
-└── build/                # PyInstaller Build Output Directory
+│
+├── assets/          # README assets
+├── confs/           # Framework configuration
+├── mainclass/       # Core framework components
+├── modules/         # Post-exploitation modules
+├── payloads/        # Payload templates
+├── build/           # Generated payloads
+├── photos/          # Screenshots
+├── records/         # Audio recordings
+│
+├── Shadow.py        # Main C2 Server
+├── requirements.txt
+├── README.md
+├── ROADMAP.md
+├── SECURITY.md
+├── FAQS.md
+└── CONTRIBUTING.md
 ```
 
----
 
-## 📦 Installation
 
-### 1. Clone the repository
+# 📦 Installation
+
+ShadowLab targets **Python 3.13.x**.
+
+Clone the repository and install the required dependencies.
+
+## 1. Clone the repository
+
 ```bash
 git clone https://github.com/msalihberk/ShadowLab.git
 cd ShadowLab
 ```
 
-### 2. Install dependencies
+## 2. Install dependencies
 
-Choose the installation method that best fits your environment:
-
-**Standard Installation**
-For environments with unrestricted package management:
 ```bash
 pip install -r requirements.txt
 ```
-**Virtual Environment Installation**
-For strictly managed or isolation-required environments to avoid package conflicts:
+
+Or create a virtual environment first:
+
 ```bash
-python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt
+python -m venv venv
+
+# Windows
+venv\Scripts\activate
+
+# Linux / macOS
+source venv/bin/activate
+
+pip install -r requirements.txt
 ```
----
 
-## 💻 Usage
-
-### Step 1: Start the C2 Server
+## 3. Start the framework
 
 ```bash
 python Shadow.py
 ```
 
-### Step 2: Generate Auth Code
-Run the server and select **Option 5 (Generate Conf)**. This initializes the `confs/conf.json` file, creating unique **Fernet Keys** and the **Auth Code** required for the secure agent-server handshake.
+If the application starts successfully, the installation is complete.
 
-### Step 3: Configure Connection
-- Select option `3` to set your IP address
-- Select option `4` to set the listening port
 
-### Step 4: Build Agent
-- Choose option `1` to build an agent
-- Select format (Python or EXE)
-- Optionally bind to another application
-- Choose Staged or UnStaged mode
 
-### Step 5: Start Listener
-- Choose option `2` to start listening
-- Wait for incoming agent connection
+# 💻 Usage
 
-### Step 6: Manage Session
-Once connected, use these commands:
+After completing the installation, the typical ShadowLab workflow is:
 
-| Command | Action |
-|---------|--------|
-| `1` | Remote Shell |
+```text
+Generate Configuration
+        │
+        ▼
+Configure Listener
+        │
+        ▼
+Build Payload
+        │
+        ▼
+Start Listener
+        │
+        ▼
+Agent Connection
+        │
+        ▼
+Manage Session
+        │
+        ▼
+Deploy Post-Exploitation Modules
+```
+
+## 1. Generate the Framework Configuration
+
+Generate a unique encryption key and authentication token before building any payload.
+
+```text
+Option 5 → Generate Configuration
+```
+
+This creates the required configuration inside:
+
+```text
+confs/conf.json
+```
+
+---
+
+## 2. Configure the Listener
+
+Specify the IP address and listening port that will be embedded into generated payloads.
+
+```text
+Option 3 → Set IP Address
+Option 4 → Set Listening Port
+```
+
+---
+
+## 3. Build a Payload
+
+Generate either a staged or unstaged payload.
+
+```text
+Option 1 → Build Payload
+```
+
+The builder supports:
+
+- Python payloads
+- Standalone executables
+- Executable binding
+- Staged deployment
+- Unstaged deployment
+
+---
+
+## 4. Start the Listener
+
+Begin accepting incoming encrypted connections.
+
+```text
+Option 2 → Start Listener
+```
+
+---
+
+## 5. Manage Active Sessions
+
+Once an agent connects, ShadowLab provides an interactive management interface.
+
+| Command | Function |
+| :--- | :--- |
+| `1` | Interactive Shell |
 | `2` | Create Persistence |
 | `3` | Record Microphone |
 | `4` | Upload File |
-| `5` | Webcam Snapshot |
-| `6` | Get Location |
+| `5` | Webcam Capture |
+| `6` | Geolocation |
 | `7` | Remove Persistence |
-| `8` | System Info |
-| `9` | Send Notification |
-| `10` | Get Screenshot |
-| `11` | Security Info |
-| `12` | 🔥 Manage Post Exploits |
-| `q` | Quit |
+| `8` | System Information |
+| `9` | Desktop Notification |
+| `10` | Screenshot |
+| `11` | Security Software Audit |
+| `12` | Post-Exploitation Manager |
+| `q` | Close Session |
 
-### 🔥 Step 7: Launch Post-Exploit Modules
 
-The new post-exploit manager turns `modules/` into an extension point for active sessions.
 
-1. Choose command `12` from the connected agent menu
-2. Select a discovered module such as `KEYLOGGER`
-3. Fill runtime template values when prompted
-4. Register and start the module through the encrypted C2 channel
-5. Open the module controller when available for interactive output
+## 6. Deploy Post-Exploitation Modules
 
-Current included module:
+ShadowLab includes a modular post-exploitation framework capable of dynamically discovering and deploying runtime modules.
 
-| Module | Description | Controller |
-|--------|-------------|------------|
-| `KEYLOGGER` | Configurable post-exploit keylogger module template | Yes |
+Typical workflow:
+
+```text
+Session
+   │
+   ▼
+Post-Exploitation Manager
+   │
+   ▼
+Select Module
+   │
+   ▼
+Configure Template Values
+   │
+   ▼
+Deploy
+   │
+   ▼
+Interactive Controller
+```
+
+The framework currently ships with a sample **KEYLOGGER** module, while additional modules can be added without modifying the core framework thanks to the dynamic module architecture.
+
+
+
+# 📚 Documentation
+
+Additional documentation is available for users who want to explore the project in greater depth.
+
+| Document | Description |
+| :--- | :--- |
+| `ROADMAP.md` | Project roadmap and future milestones |
+| `SECURITY.md` | Responsible disclosure and security policy |
+| `FAQS.md` | Frequently asked questions |
+| `CONTRIBUTING.md` | Contribution guidelines |
+
+
+
+# 📝 License
+
+ShadowLab is released under the **MIT License**.
+
+See the [`LICENSE`](LICENSE) file for the complete license text.
+
+## Author
+Developed and maintained by **Mustafa Salih Berk**.
 
 ---
 
-## 🔧 Requirements
-
-- **Python 3.13.x**
-- colorama
-- cryptography
-- pyinstaller
-- opencv-python
-- requests
-- sounddevice
-- wavio
-- pillow
-- pynput
-- simplejson
-- pyfiglet
-- wmi
-- plyer
+> [!WARNING]
+>
+> ShadowLab is intended **exclusively** for cybersecurity education, authorized security assessments, and isolated laboratory environments.
+>
+> Unauthorized use against systems you do not own or have explicit permission to assess is illegal and outside the intended purpose of this project.
 
 ---
 
-## 🔒 [Security Policy](SECURITY.md)
-Review our strict security protocols, ethical utilization boundaries, and our internal pipeline for **Responsible Disclosure**. Learn how to safely report any discovered framework vulnerabilities directly through GitHub's secure infrastructure without exposing telemetry data to the public.
+<div align="center">
 
----
+### ⭐ Support the Project
 
-## ❓ [Frequently Asked Questions](FAQS.md)
-Serves as an operational directory covering the structural mechanics of the framework. It defines the architectural scope of Monolithic (Unstaged) versus Multi-stage (Staged) delivery, safe testing methods for handling Antivirus/EDR exclusions in research labs, and technical details regarding our **AES-128** transport layer encryption.
+If ShadowLab helps your learning or research, consider giving the repository a **GitHub Star**.
 
----
+<br>
 
-## 🤝 [Contributing Guidelines](CONTRIBUTING.md)
-Want to improve the C2 framework? Read our technical contribution guidelines to understand our modular architectural standards, Python 3.13.x development environment rules, encryption key hygiene, and instructions on how to safely open a Pull Request.
+Made with ❤️ for the cybersecurity education community.
 
-## 📝 License
+<br><br>
 
-This project is provided for educational and research purposes only. See [LICENSE](LICENSE) for details.
+<sub>
+Banner artwork created with the assistance of ChatGPT (OpenAI).
+</sub>
+
+</div>
