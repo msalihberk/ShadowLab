@@ -52,6 +52,9 @@
 
 # 🚀 Overview
 
+> [!NOTE]
+> Active development is continuing in the [refactor/async-api-architecture](https://github.com/msalihberk/ShadowLab/tree/refactor/async-api-architecture) branch
+
 ShadowLab is a modular **Command & Control (C2)** framework written entirely in Python for studying the engineering principles behind modern remote administration infrastructures.
 
 The project provides a transparent implementation of encrypted communications, staged and unstaged payload generation, Windows integration, and runtime post-exploitation modules, allowing students, researchers, and security professionals to explore how contemporary C2 frameworks are designed inside controlled laboratory environments.
