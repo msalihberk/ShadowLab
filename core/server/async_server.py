@@ -14,7 +14,6 @@ class AsyncServer:
         client_addr = writer.get_extra_info('peername')
         addr_str = f"{client_addr[0]}:{client_addr[1]}" if client_addr else "Unknown"
 
-        # Add new session to SessionManager
         session_id = self.current_id
         self.current_id += 1
 
@@ -28,7 +27,6 @@ class AsyncServer:
         await self.session_manager.add_session(session)
         print(f"[+] New agent connected! ID: {session_id} Address: {addr_str}")
 
-        # Listen for incoming messages from the agent
         try:
             while True:
                 data = await async_comm.async_recv(reader)
@@ -36,7 +34,6 @@ class AsyncServer:
         except Exception as e:
             print(f"[-] Connection lost with agent {session_id} Error: {e}")
         finally:
-            # Disconnect the agent and remove the session
             await self.session_manager.remove_session(session_id)
 
     async def start(self):

