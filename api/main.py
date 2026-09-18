@@ -6,6 +6,7 @@ from fastapi import FastAPI, HTTPException
 from core.management import session_manager
 from core.server import async_server
 from core.server import async_comm
+from cli.system import system
 
 
 class APIManager:
@@ -22,9 +23,10 @@ class APIManager:
         if self.server_task:
             self.server_task.cancel()
 
+recent_port = system.getdata("recent_port", "user_data") or 4444
 manager = APIManager(
     session_mngr=session_manager.SessionManager(),
-    address="0.0.0.0:4444"
+    address=f"0.0.0.0:{recent_port}"
 )
 
 @asynccontextmanager
