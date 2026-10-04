@@ -82,7 +82,7 @@ class InteractiveShell():
             data = resp.get('result') if isinstance(resp, dict) and 'result' in resp else resp
         except Exception:
             data = {}
-        Options.printSecurityInfoText(data)
+        Options.print_security_info_text(data)
         input("OK")
 
     def sysinfo(self, conn, address):
@@ -92,7 +92,7 @@ class InteractiveShell():
             data = resp.get('result') if isinstance(resp, dict) and 'result' in resp else resp
         except Exception:
             data = {}
-        print(Options.getSystemInfoText(data))
+        print(Options.get_system_info_text(data))
         input("OK")
 
     def mic(self, conn, address):

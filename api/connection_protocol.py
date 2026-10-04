@@ -13,7 +13,7 @@ class TaskRequest(BaseModel):
 
 def return_all_sessions(sessions: list):
     return {
-        "status": "success",
+        "status": "Success",
         "count": len(sessions),
         "agents": [
             {"id": s.id, "address": s.address, "status": s.status}

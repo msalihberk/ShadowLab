@@ -9,7 +9,7 @@ import pyfiglet
 import json
 import os
 import random
-import httpx
+from tabulate import tabulate
 
 init(autoreset=True)
 
@@ -177,9 +177,8 @@ class System():
 
     @staticmethod
     async def printSessions():
-        session_list = SessionAPI().get_session_list()
-
-
+        session_list = await SessionAPI().get_session_list()
+        print(options.Options.get_session_text(session_list))
 
     @staticmethod
     def printBuildOptions(index):
@@ -197,11 +196,11 @@ class System():
         status_ip = Fore.LIGHTGREEN_EX+ip+Fore.LIGHTCYAN_EX if ip != "" else f"{Fore.RED}Not Selected{Fore.LIGHTCYAN_EX}"
         status_port = Fore.LIGHTGREEN_EX+port+Fore.LIGHTCYAN_EX if port != "" else f"{Fore.RED}Not Selected{Fore.LIGHTCYAN_EX}"
         
-        print(Fore.LIGHTCYAN_EX + options.Options.getMenuOptions(status_ip, status_port) + "\n")
+        print(Fore.LIGHTCYAN_EX + options.Options.get_menu_options(status_ip, status_port) + "\n")
 
     @staticmethod
     def input(mode, port=0, ip=""):
-        return input(options.Options.getInputText(mode, port, ip))
+        return input(options.Options.get_input_text(mode, port, ip))
 
     @staticmethod
     def clear_screen():

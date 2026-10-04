@@ -1,4 +1,5 @@
 from colorama import Fore, init, Style
+from tabulate import tabulate
 
 class Options():
     slot = ["DATA INPUT", "IP INPUT", "PORT INPUT", "AGENT IP: ", "AGENT PORT: ", "GENERATE", "APP",
@@ -48,7 +49,7 @@ class Options():
     build_formats = {'1':'py', '2':'exe'}
 
     @staticmethod
-    def getMenuOptions(ip, port):
+    def get_menu_options(ip, port):
         return f"""\n
             1   -   Create RAT
             2   -   Listen
@@ -60,57 +61,57 @@ class Options():
             """
 
     @staticmethod
-    def printSecurityInfoText(data):
+    def print_security_info_text(data):
         print(f'''{Style.BRIGHT}{Fore.GREEN}            
-            | SECURITY INFO |
-                          
-            {Fore.MAGENTA}{Style.BRIGHT}---FIREWALL---''')
+| SECURITY INFO |
+              
+{Fore.MAGENTA}{Style.BRIGHT}---FIREWALL---''')
         
         firewall_data = data["Firewall"]
 
         for f in firewall_data:
             print(f'''
-                {Fore.LIGHTBLUE_EX}displayName: {Fore.LIGHTCYAN_EX}{f["displayName"]} 
-                {Fore.LIGHTBLUE_EX}instanceGuid: {Fore.LIGHTCYAN_EX}{f["instanceGuid"]} 
-                {Fore.LIGHTBLUE_EX}pathToSignedProductExe: {Fore.LIGHTCYAN_EX}{f["pathToSignedProductExe"]} 
-                {Fore.LIGHTBLUE_EX}pathToSignedReportingExe: {Fore.LIGHTCYAN_EX}{f["pathToSignedReportingExe"]} 
-                {Fore.LIGHTBLUE_EX}productState: {Fore.LIGHTCYAN_EX}{f["productState"]} 
-                {Fore.LIGHTBLUE_EX}timestamp: {Fore.LIGHTCYAN_EX}{f["timestamp"]}''')
+{Fore.LIGHTBLUE_EX}displayName: {Fore.LIGHTCYAN_EX}{f["displayName"]} 
+{Fore.LIGHTBLUE_EX}instanceGuid: {Fore.LIGHTCYAN_EX}{f["instanceGuid"]} 
+{Fore.LIGHTBLUE_EX}pathToSignedProductExe: {Fore.LIGHTCYAN_EX}{f["pathToSignedProductExe"]} 
+{Fore.LIGHTBLUE_EX}pathToSignedReportingExe: {Fore.LIGHTCYAN_EX}{f["pathToSignedReportingExe"]} 
+{Fore.LIGHTBLUE_EX}productState: {Fore.LIGHTCYAN_EX}{f["productState"]} 
+{Fore.LIGHTBLUE_EX}timestamp: {Fore.LIGHTCYAN_EX}{f["timestamp"]}''')
 
         print(f'''{Fore.MAGENTA}{Style.BRIGHT}
 
-            ---ANTIVIRUS---''')
+---ANTIVIRUS---''')
         av_data = data["Antivirus"]
 
         for f in av_data:
             print(f'''
-                {Fore.LIGHTBLUE_EX}displayName: {Fore.LIGHTCYAN_EX}{f["displayName"]} 
-                {Fore.LIGHTBLUE_EX}instanceGuid: {Fore.LIGHTCYAN_EX}{f["instanceGuid"]} 
-                {Fore.LIGHTBLUE_EX}pathToSignedProductExe: {Fore.LIGHTCYAN_EX}{f["pathToSignedProductExe"]} 
-                {Fore.LIGHTBLUE_EX}pathToSignedReportingExe: {Fore.LIGHTCYAN_EX}{f["pathToSignedReportingExe"]} 
-                {Fore.LIGHTBLUE_EX}productState: {Fore.LIGHTCYAN_EX}{f["productState"]} 
-                {Fore.LIGHTBLUE_EX}timestamp: {Fore.LIGHTCYAN_EX}{f["timestamp"]}''')
+{Fore.LIGHTBLUE_EX}displayName: {Fore.LIGHTCYAN_EX}{f["displayName"]} 
+{Fore.LIGHTBLUE_EX}instanceGuid: {Fore.LIGHTCYAN_EX}{f["instanceGuid"]} 
+{Fore.LIGHTBLUE_EX}pathToSignedProductExe: {Fore.LIGHTCYAN_EX}{f["pathToSignedProductExe"]} 
+{Fore.LIGHTBLUE_EX}pathToSignedReportingExe: {Fore.LIGHTCYAN_EX}{f["pathToSignedReportingExe"]} 
+{Fore.LIGHTBLUE_EX}productState: {Fore.LIGHTCYAN_EX}{f["productState"]} 
+{Fore.LIGHTBLUE_EX}timestamp: {Fore.LIGHTCYAN_EX}{f["timestamp"]}''')
 
     @staticmethod
-    def getSystemInfoText(data):
+    def get_system_info_text(data):
         display_data = data
 
         text = f'''{Style.BRIGHT}{Fore.GREEN} 
-            | SYSTEM INFO |{Style.NORMAL}
-            {Fore.LIGHTBLUE_EX}Platform:{Fore.LIGHTCYAN_EX} {display_data["Platform"]}
-            {Fore.LIGHTBLUE_EX}Platform Release:{Fore.LIGHTCYAN_EX} {display_data["Platform Release"]}
-            {Fore.LIGHTBLUE_EX}Platform Version:{Fore.LIGHTCYAN_EX} {display_data["Platform Version"]}
-            {Fore.LIGHTBLUE_EX}Architecture:{Fore.LIGHTCYAN_EX} {display_data["Architecture"]}
-            {Fore.LIGHTBLUE_EX}Hostname:{Fore.LIGHTCYAN_EX} {display_data["Hostname"]}
-            {Fore.LIGHTBLUE_EX}IP Address:{Fore.LIGHTCYAN_EX} {display_data["IP Address"]}
-            {Fore.LIGHTBLUE_EX}Processor:{Fore.LIGHTCYAN_EX} {display_data["Processor"]}
-            {Fore.LIGHTBLUE_EX}Python Build:{Fore.LIGHTCYAN_EX} {display_data["Python Build"]}
-            {Fore.LIGHTBLUE_EX}Python Version:{Fore.LIGHTCYAN_EX} {display_data["Python Version"]}
+| SYSTEM INFO |{Style.NORMAL}
+{Fore.LIGHTBLUE_EX}Platform:{Fore.LIGHTCYAN_EX} {display_data["Platform"]}
+{Fore.LIGHTBLUE_EX}Platform Release:{Fore.LIGHTCYAN_EX} {display_data["Platform Release"]}
+{Fore.LIGHTBLUE_EX}Platform Version:{Fore.LIGHTCYAN_EX} {display_data["Platform Version"]}
+{Fore.LIGHTBLUE_EX}Architecture:{Fore.LIGHTCYAN_EX} {display_data["Architecture"]}
+{Fore.LIGHTBLUE_EX}Hostname:{Fore.LIGHTCYAN_EX} {display_data["Hostname"]}
+{Fore.LIGHTBLUE_EX}IP Address:{Fore.LIGHTCYAN_EX} {display_data["IP Address"]}
+{Fore.LIGHTBLUE_EX}Processor:{Fore.LIGHTCYAN_EX} {display_data["Processor"]}
+{Fore.LIGHTBLUE_EX}Python Build:{Fore.LIGHTCYAN_EX} {display_data["Python Build"]}
+{Fore.LIGHTBLUE_EX}Python Version:{Fore.LIGHTCYAN_EX} {display_data["Python Version"]}
             '''
         return text
 
     @staticmethod
-    def getInputText(mode, port=0, ip=""):
+    def get_input_text(mode, port=0, ip=""):
         SLOT1 = Fore.CYAN
         SLOT2 = Fore.CYAN
         # DEFAULT
@@ -191,3 +192,13 @@ class Options():
         )
         
         return prompt_str
+
+    @staticmethod
+    def get_session_text(data: dict) -> str:
+        text = Fore.LIGHTGREEN_EX + f"\nSTATUS: {Fore.LIGHTMAGENTA_EX} {data['status']} "
+        text += Fore.LIGHTGREEN_EX + f"COUNT: {Fore.LIGHTMAGENTA_EX} {data['count']}"
+        text += "\n\n"
+        text += Style.BRIGHT + Fore.LIGHTCYAN_EX + "AGENTS\n"
+        text += Fore.LIGHTCYAN_EX + tabulate(data["agents"], headers="keys", tablefmt="fancy_grid") + "\n"
+
+        return text

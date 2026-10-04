@@ -16,4 +16,5 @@ uvicorn
 aiofiles
 httpx
 fastapi
+tabulate
 pydantic
