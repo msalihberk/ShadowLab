@@ -1,18 +1,26 @@
 import os
 import threading
 import uvicorn
+import asyncio
 from colorama import Fore, init
 
 from agent.builder.builder import builder
 from api.main import app, manager
 from cli import shell as shclass
-from cli.options import options
+from cli.options import Options
 from core.crypto.encrypter import *
 from core.utils.paths import get_project_path
 
-ip = system.getdata("recent_ip", "user_data") or "0.0.0.0"
-port = system.getdata("recent_port", "user_data") or 4444
+ip = System.getdata("recent_ip", "user_data") or "0.0.0.0"
+port = System.getdata("recent_port", "user_data") or 4444
 
+
+def sessions():
+    asyncio.run(System.printSessions())
+
+    sess = System.input(15)
+
+    System.active_session = sess
 
 def generateConf():
     generate()
@@ -20,28 +28,28 @@ def generateConf():
 
 def selectIP():
     global ip
-    system.clear_screen()
-    system.printheader()
-    system.printMenuOptions(ip, port)
-    ip = system.input(1)
-    system.setData("recent_ip", ip, "user_data")
+    System.clear_screen()
+    System.printheader()
+    System.printMenuOptions(ip, port)
+    ip = System.input(1)
+    System.setData("recent_ip", ip, "user_data")
 
 
 def selectPort():
     global port
-    system.clear_screen()
-    system.printheader()
-    system.printMenuOptions(ip, port)
-    port = int(system.input(2))
-    system.setData("recent_port", port, "user_data")
+    System.clear_screen()
+    System.printheader()
+    System.printMenuOptions(ip, port)
+    port = int(System.input(2))
+    System.setData("recent_port", port, "user_data")
 
 
 def getPayloadOption():
     while True:
-        system.clear_screen()
-        system.printheader()
-        system.printBuildOptions(2)
-        command = system.input(6).strip("")
+        System.clear_screen()
+        System.printheader()
+        System.printBuildOptions(2)
+        command = System.input(6).strip("")
 
         if command in ["1", "2", "9"]:
             break
@@ -51,13 +59,13 @@ def getPayloadOption():
 def getAppOption():
     location = "null"
     while True:
-        system.clear_screen()
-        system.printheader()
-        system.printBuildOptions(3)
-        command = system.input(5).strip("")
+        System.clear_screen()
+        System.printheader()
+        System.printBuildOptions(3)
+        command = System.input(5).strip("")
 
         if command == "1":
-            location = system.input(5)
+            location = System.input(5)
             if os.path.exists(location):
                 break
             else:
@@ -75,16 +83,16 @@ def build():
         input("OK")
         return
     while True:
-        system.clear_screen()
-        system.printheader()
-        system.printBuildOptions(1)
-        command = system.input(3).strip("")
+        System.clear_screen()
+        System.printheader()
+        System.printBuildOptions(1)
+        command = System.input(3).strip("")
 
         if command == "9":
             break
 
         try:
-            b_format = options.build_formats.get(command, "exe")
+            b_format = Options.build_formats.get(command, "exe")
         except Exception:
             b_format = "exe"
 
@@ -117,8 +125,8 @@ def listen():
         input("OK")
         return
 
-    system.clear_screen()
-    system.printheader()
+    System.clear_screen()
+    System.printheader()
     print(Fore.LIGHTCYAN_EX + f"[+] Starting Async C2 Server on {ip}:{port}...")
     print(
         Fore.LIGHTCYAN_EX
@@ -139,22 +147,23 @@ def listen():
 menu_options = {
     "1": build,
     "2": listen,
-    "3": selectIP,
-    "4": selectPort,
-    "5": generateConf,
+    "3": sessions,
+    "4": selectIP,
+    "5": selectPort,
+    "6": generateConf,
 }
 
 init(autoreset=True)
 
 
 def main():
-    system.clear_screen()
-    system.printDisclaimer()
+    System.clear_screen()
+    System.printDisclaimer()
     while True:
-        system.clear_screen()
-        system.printheader()
-        system.printMenuOptions(ip, port)
-        command = system.input(0)
+        System.clear_screen()
+        System.printheader()
+        System.printMenuOptions(ip, port)
+        command = System.input(0)
 
         if command == "q":
             break
@@ -162,7 +171,7 @@ def main():
         if func:
             func()
         else:
-            system.clear_screen()
+            System.clear_screen()
 
 
 if __name__ == "__main__":

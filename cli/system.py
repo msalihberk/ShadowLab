@@ -1,16 +1,23 @@
+import asyncio
+from urllib import response
+
 from colorama import Fore, init, Style
 from cli import options
 from core.utils.paths import get_project_path
+from api.session_api import SessionAPI
 import pyfiglet
 import json
 import os
 import random
+import httpx
 
 init(autoreset=True)
 
 USER_DATA_KEYS = {"KEY", "authcode", "recent_ip", "recent_port"}
 
-class system():
+class System():
+    active_session = None
+    @staticmethod
     def _normalize_source(source):
         if source in ("conf", "conf.json"):
             return "conf.json"
@@ -20,6 +27,7 @@ class system():
             return "user_data.json"
         return source if source.endswith(".json") else f"{source}.json"
 
+    @staticmethod
     def _resolve_source(source, data=None):
         if source in ("conf", "conf.json"):
             if data in USER_DATA_KEYS:
@@ -31,15 +39,18 @@ class system():
             return "user_data"
         return source
 
+    @staticmethod
     def show_banner():
-        quotes = system.getJson("data").get("quotes", [])
+        quotes = System.getJson("data").get("quotes", [])
         print(
             Fore.LIGHTCYAN_EX
             + f"\n \"{random.choice(quotes)}\"\n"
         )
+
+    @staticmethod
     def getdata(data, source="conf"):
-        source_name = system._resolve_source(source, data)
-        source_file = system._normalize_source(source_name)
+        source_name = System._resolve_source(source, data)
+        source_file = System._normalize_source(source_name)
 
         try:
             with open(get_project_path("confs", source_file), 'r') as f:
@@ -47,9 +58,10 @@ class system():
         except Exception as error:
             print(Fore.LIGHTRED_EX + f"[!] Error: {error}")
             input("OK")
-    
+
+    @staticmethod
     def getJson(source="conf"):
-        source_file = system._normalize_source(source)
+        source_file = System._normalize_source(source)
 
         try:
             with open(get_project_path("confs", source_file), 'r') as f:
@@ -57,9 +69,10 @@ class system():
         except Exception as error:
             print(Fore.LIGHTRED_EX + f"[!] Error: {error}")
             input("OK")
-    
+
+    @staticmethod
     def setJson(data, source="conf"):
-        source_file = system._normalize_source(source)
+        source_file = System._normalize_source(source)
 
         try:
             with open(get_project_path("confs", source_file), 'w') as f:
@@ -67,29 +80,30 @@ class system():
         except Exception as error:
             print(Fore.LIGHTRED_EX + f"[!] Error: {error}")
             input("OK")
-    
+
+    @staticmethod
     def setData(data, value, source="conf"):
-        source_name = system._resolve_source(source, data)
-        old = system.getJson(source_name)
+        source_name = System._resolve_source(source, data)
+        old = System.getJson(source_name)
 
         try:
             old[data] = value
-            system.setJson(old, source_name)
+            System.setJson(old, source_name)
         except Exception as e:
             print(Fore.LIGHTRED_EX + f"[!] Error: {e}")
             input("OK")
-        
-        
+
+    @staticmethod
     def printheader():
-        font = system.getdata("header_font")
-        line_char = system.getdata("line_char")
-        line_size = system.getdata("line_size")
-        version = system.getdata("version")
+        font = System.getdata("header_font")
+        line_char = System.getdata("line_char")
+        line_size = System.getdata("line_size")
+        version = System.getdata("version")
         
         header = pyfiglet.figlet_format(" SHADOW", font=font)
 
         print(Fore.CYAN + Style.BRIGHT + header)
-        system.show_banner()
+        System.show_banner()
         print(Fore.WHITE + line_char * line_size)
         
         author = "By Mustafa Salih Berk"
@@ -112,10 +126,11 @@ class system():
         
         print(Fore.WHITE + line_char * line_size + Style.RESET_ALL)
 
+    @staticmethod
     def printDisclaimer():
-        font = system.getdata("header_font")
-        line_char = system.getdata("line_char")
-        line_size = system.getdata("line_size")
+        font = System.getdata("header_font")
+        line_char = System.getdata("line_char")
+        line_size = System.getdata("line_size")
         os.system('cls' if os.name == 'nt' else 'clear')
 
         title_text = pyfiglet.figlet_format("SHADOW", font=font)
@@ -155,28 +170,39 @@ class system():
         print(Fore.WHITE + "\n" + line_char * line_size)
         print(Fore.CYAN + "Press ENTER to initialize the environment...", end="")
         input()
-    
-    def printAgentOptions():
-        print(Fore.LIGHTCYAN_EX + options.options.agent_options)
 
+    @staticmethod
+    def printAgentOptions():
+        print(Fore.LIGHTCYAN_EX + options.Options.agent_options)
+
+    @staticmethod
+    async def printSessions():
+        session_list = SessionAPI().get_session_list()
+
+
+
+    @staticmethod
     def printBuildOptions(index):
         print(f"{Fore.MAGENTA}[{Fore.LIGHTGREEN_EX}{Style.BRIGHT}BUILD-{index}{Fore.MAGENTA}]")
     
         if index == 1:
-            print(Fore.LIGHTCYAN_EX + options.options.createMenu_options1)
+            print(Fore.LIGHTCYAN_EX + options.Options.createMenu_options1)
         elif index == 2:
-            print(Fore.LIGHTCYAN_EX + options.options.createMenu_options2)
+            print(Fore.LIGHTCYAN_EX + options.Options.createMenu_options2)
         elif index == 3:
-            print(Fore.LIGHTCYAN_EX + options.options.createMenu_options3)
+            print(Fore.LIGHTCYAN_EX + options.Options.createMenu_options3)
 
+    @staticmethod
     def printMenuOptions(ip, port):
         status_ip = Fore.LIGHTGREEN_EX+ip+Fore.LIGHTCYAN_EX if ip != "" else f"{Fore.RED}Not Selected{Fore.LIGHTCYAN_EX}"
         status_port = Fore.LIGHTGREEN_EX+port+Fore.LIGHTCYAN_EX if port != "" else f"{Fore.RED}Not Selected{Fore.LIGHTCYAN_EX}"
         
-        print(Fore.LIGHTCYAN_EX + options.options.getMenuOptions(status_ip, status_port) + "\n")
-    
-    def input(mode, port=0, ip=""):
-        return input(options.options.getInputText(mode, port, ip))
+        print(Fore.LIGHTCYAN_EX + options.Options.getMenuOptions(status_ip, status_port) + "\n")
 
+    @staticmethod
+    def input(mode, port=0, ip=""):
+        return input(options.Options.getInputText(mode, port, ip))
+
+    @staticmethod
     def clear_screen():
         os.system("cls") if os.name == "nt" else os.system("clear")

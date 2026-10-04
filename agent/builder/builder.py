@@ -1,5 +1,5 @@
 from colorama import Fore
-from cli.system import system
+from cli.system import System
 from agent.builder.pyi_progress import run_pyinstaller_with_progress
 from core.utils.paths import get_project_path, ensure_project_dir
 import shutil
@@ -20,8 +20,8 @@ class builder():
             
             content = content.replace("__ipaddr__", ip)
             content = content.replace("12345", str(port))
-            content = content.replace("'authcode'", f"'{system.getdata('authcode', "user_data")}'")
-            content = content.replace("'RANDOM_KEY'", f"'{system.getdata('KEY', "user_data")}'")
+            content = content.replace("'authcode'", f"'{System.getdata('authcode', "user_data")}'")
+            content = content.replace("'RANDOM_KEY'", f"'{System.getdata('KEY', "user_data")}'")
             
             if isstaged:
                 content = content.replace('"PATH"', '"main.exe"')
@@ -68,8 +68,8 @@ class builder():
             for f in [temp_path, get_project_path("temp.spec")]:
                 if os.path.exists(f): os.remove(f)
             if os.path.exists(f"{BINARIES_DIR}/temp"): shutil.rmtree(f"{BINARIES_DIR}/temp")
-            system.clear_screen()
-            system.printheader()
+            System.clear_screen()
+            System.printheader()
             print(Fore.LIGHTCYAN_EX + f"[+] Build Complete!")
             print(Fore.LIGHTYELLOW_EX + f"[+] {BINARIES_DIR}\\{output_name}.{type}")
             input('OK')

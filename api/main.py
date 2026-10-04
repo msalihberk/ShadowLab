@@ -6,7 +6,7 @@ from fastapi import FastAPI, HTTPException
 from core.management import session_manager
 from core.server import async_server
 from core.server import async_comm
-from cli.system import system
+from cli.system import System
 
 
 class APIManager:
@@ -23,7 +23,7 @@ class APIManager:
         if self.server_task:
             self.server_task.cancel()
 
-recent_port = system.getdata("recent_port", "user_data") or 4444
+recent_port = System.getdata("recent_port", "user_data") or 4444
 manager = APIManager(
     session_mngr=session_manager.SessionManager(),
     address=f"0.0.0.0:{recent_port}"
@@ -38,7 +38,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="ShadowLab C2 API", lifespan=lifespan)
 
-@app.get("/api/v1/agents")
+@app.get("/api/v1/sessions")
 async def list_agents():
     sessions = await manager.session_manager.get_all_sessions()
     return return_all_sessions(sessions)

