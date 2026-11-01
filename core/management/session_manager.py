@@ -3,7 +3,11 @@ from typing import Dict, Optional, List
 from core.management.session import Session
 
 class SessionManager:
+    Instance = None
     def __init__(self):
+        if SessionManager.Instance is not None:
+            raise Exception("SessionManager is a singleton! Use SessionManager.Instance to access the instance.")
+        SessionManager.Instance = self
         self.sessions: Dict[int, Session] = {}
         self._lock = asyncio.Lock()
 

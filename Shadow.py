@@ -6,7 +6,7 @@ from colorama import Fore, init
 
 from agent.builder.builder import builder
 from api.main import app, manager
-from cli import shell as shclass
+from cli.shell import InteractiveShell
 from cli.options import Options
 from core.crypto.encrypter import *
 from core.utils.paths import get_project_path
@@ -19,6 +19,7 @@ def sessions():
     asyncio.run(System.printSessions())
     sess = System.input(15)
     System.active_session = sess
+    InteractiveShell(session_id=sess).start()
 
 def generateConf():
     generate()

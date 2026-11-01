@@ -9,6 +9,7 @@ import pyfiglet
 import json
 import os
 import random
+from core.management.session_manager import SessionManager
 from tabulate import tabulate
 
 init(autoreset=True)
@@ -17,6 +18,7 @@ USER_DATA_KEYS = {"KEY", "authcode", "recent_ip", "recent_port"}
 
 class System():
     active_session = None
+
     @staticmethod
     def _normalize_source(source):
         if source in ("conf", "conf.json"):
@@ -172,8 +174,8 @@ class System():
         input()
 
     @staticmethod
-    def printAgentOptions():
-        print(Fore.LIGHTCYAN_EX + options.Options.agent_options)
+    def printShellOptions():
+        print(Fore.LIGHTCYAN_EX + options.Options.shell_options)
 
     @staticmethod
     async def printSessions():
