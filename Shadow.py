@@ -17,14 +17,11 @@ port = System.getdata("recent_port", "user_data") or 4444
 
 def sessions():
     asyncio.run(System.printSessions())
-
     sess = System.input(15)
-
     System.active_session = sess
 
 def generateConf():
     generate()
-
 
 def selectIP():
     global ip

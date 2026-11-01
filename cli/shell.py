@@ -6,18 +6,20 @@ from colorama import Fore
 from agent.post_exploit.post_exploit_controller import PostExploitController
 from api.connection_protocol import create_task
 import random, os, simplejson
+from api.session_api import SessionAPI
 
 post_exploit_controller = PostExploitController()
 
 class InteractiveShell():
     def __init__(self, session_id):
         self.session_id = session_id
+        self.session_api = SessionAPI()
 
     def send_task(self, conn, address, module, action, args=None):
         """Send a JSON task to the agent using the connection protocol."""
         session_id = f"{address[0]}:{address[1]}" if address else ""
         task = create_task(session_id, module, action, args or {})
-        send_data(conn, task)
+        self.session_api.send_task(self.session_id, task)
 
 
     def send_notification(self, conn, address):

@@ -7,6 +7,7 @@ from core.management import session_manager
 from core.server import async_server
 from core.server import async_comm
 from cli.system import System
+from core.server.async_comm import async_send, async_recv
 
 
 class APIManager:
@@ -58,7 +59,7 @@ async def send_task(session_id: int, req: TaskRequest):
     )
 
     try:
-        await async_comm.async_send(session.writer, task_packet)
+        await async_send(session.writer, task_packet)
         return {
             "status": "success",
             "session_id": session_id,

@@ -16,5 +16,9 @@ class SessionAPI:
             response = await client.post(self.base_url + api, json=data)
             return response.json()
 
+    async def send_task(self, session_id: str, data: dict):
+        api = self.send_task_api(session_id)
+        return await self.post(api, data)
+
     async def get_session_list(self):
         return await self.get(self.session_list_api)
