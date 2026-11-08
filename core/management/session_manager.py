@@ -34,6 +34,14 @@ class SessionManager:
         async with self._lock:
             return self.sessions.get(session_id)
 
+    async def get_session_address(self, session_id: int) -> list:
+        session = await self.get_session(session_id)
+        address = ["NONE","NONE"]
+        if not session is None:
+            address = session.address.split(":")
+
+        return address
+
     async def get_all_sessions(self) -> List[Session]:
         async with self._lock:
             return list(self.sessions.values())

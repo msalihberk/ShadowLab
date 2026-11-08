@@ -13,13 +13,16 @@ from core.utils.paths import get_project_path
 
 ip = System.getdata("recent_ip", "user_data") or "0.0.0.0"
 port = System.getdata("recent_port", "user_data") or 4444
-
+started_listening = False
 
 def sessions():
     asyncio.run(System.printSessions())
     sess = System.input(15)
-    System.active_session = sess
-    InteractiveShell(session_id=sess).start()
+    try:
+        System.active_session = int(sess)
+        InteractiveShell(session_id=sess).start()
+    except:
+        print(Fore.LIGHTRED_EX + "[!] Error: Session id must be integer")
 
 def generateConf():
     generate()
@@ -118,6 +121,14 @@ def start_server_and_api():
 
 def listen():
     """Launches C2 listener and REST API server asynchronously."""
+    global started_listening
+
+    if started_listening:
+        print(Fore.LIGHTRED_EX + "[!] Warning: Server already started")
+        input("OK")
+        return
+    else:
+        started_listening = True
     if not ip or not port:
         print(Fore.LIGHTRED_EX + "[!] Warning: Please select IP and PORT")
         input("OK")
@@ -131,8 +142,11 @@ def listen():
         + "[+] Starting Web API on http://0.0.0.0:8080 (Docs: http://localhost:8080/docs)..."
     )
 
-    api_thread = threading.Thread(target=start_server_and_api, daemon=True)
-    api_thread.start()
+    try:
+        api_thread = threading.Thread(target=start_server_and_api, daemon=True)
+        api_thread.start()
+    except Exception as e:
+        print(Fore.LIGHTRED_EX + f"\n[!] Error: An error occurred while starting server: {e}")
 
     print(Fore.LIGHTGREEN_EX + "\n[+] C2 & API Service running in background!")
     print(

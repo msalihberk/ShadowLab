@@ -201,7 +201,11 @@ class System():
         print(Fore.LIGHTCYAN_EX + options.Options.get_menu_options(status_ip, status_port) + "\n")
 
     @staticmethod
-    def input(mode, port=0, ip=""):
+    def input(mode, ip: str = "", port: str = "", ignore: bool = False):
+        if not System.active_session is None and not ignore:
+            address = asyncio.run(SessionManager.Instance.get_session_address(int(System.active_session)))
+            ip = address[0]
+            port = address[1]
         return input(options.Options.get_input_text(mode, port, ip))
 
     @staticmethod
