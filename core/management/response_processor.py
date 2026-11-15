@@ -43,6 +43,8 @@ class ResponseProcessor:
                 ResponseProcessor._process_json(data)
             elif data["msg_type"] == TYPE.FILE:
                 ResponseProcessor._process_file(data)
+            elif data["msg_type"] == TYPE.SHELL:
+                ResponseProcessor._process_shell(data)
         except KeyError:
             CLIPrinter.error("msg_type not found in the data")
 
@@ -53,5 +55,13 @@ class ResponseProcessor:
     @staticmethod
     def _process_json(data: dict):
         print_response_table(data)
+
+    @staticmethod
+    def _process_shell(data: dict):
+        if data.get("status", "") is "failure":
+            CLIPrinter.error(data["error"])
+
+        print(data.get("result", {}).get("output", "") + "\n")
+        print(data.get("result", {}).get("path", ""), end="> ")
 
 

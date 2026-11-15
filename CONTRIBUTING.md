@@ -27,7 +27,7 @@ By participating in this project, you agree to maintain a professional and respe
 - Open a new issue with a clear title and environment context (OS, Python version, log outputs).
 
 ### 🗺️ Supporting the Async Refactor & Roadmap
-If you want to help implement core engine upgrades (such as the Async migration, FastAPI endpoints, or UI dashboard), please review the detailed milestones in our **Project Roadmap** inside `README.md` and target the active `refactor/async-api-architecture` branch.
+If you want to help implement core engine upgrades, review the current implementation status and limitations in `README.md`, then target the active `refactor/async-api-architecture` branch.
 
 ### 🔥 Developing Post-Exploitation Modules
 The heart of ShadowLab's extensibility is its modular Post-Exploit workflow. You can contribute new capability modules under the `modules/` directory:

