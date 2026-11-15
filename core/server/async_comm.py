@@ -11,6 +11,10 @@ from core.server.protocol import decode_json, encode_json
 HEADER_SIZE = 4
 
 
+def length_prefixed_msg(command):
+    enc = encrypt(command)
+    return struct.pack(">I", len(enc)), enc
+
 async def recv_exact(reader: asyncio.StreamReader, size: int) -> bytes:
     try:
         return await reader.readexactly(size)
@@ -22,9 +26,7 @@ async def send_data(queue: asyncio.Queue, data: bytes | str):
     if isinstance(data, str):
         data = data.encode("utf-8")
 
-    enc = encrypt(data)
-    await queue.put(struct.pack(">I", len(enc)))
-    await queue.put(enc)
+    await queue.put(data)
 
 async def recv_data(reader: asyncio.StreamReader, decode=True):
     try:

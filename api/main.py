@@ -8,7 +8,7 @@ from core.server import async_server
 from core.server import async_comm
 from cli.system import System
 from core.server.async_comm import async_send, async_recv
-
+from core.enums.msg_types import TYPE
 
 class APIManager:
     def __init__(self, session_mngr: session_manager.SessionManager, address: str):
@@ -53,6 +53,7 @@ async def send_task(session_id: int, req: TaskRequest):
 
     task_packet = create_task(
         session_id=str(session_id),
+        msg_type=TYPE.JSON,
         module=req.module,
         action=req.action,
         args=req.args

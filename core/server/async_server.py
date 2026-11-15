@@ -1,4 +1,5 @@
 import asyncio
+from core.management.response_processor import ResponseProcessor
 from core.management.session import Session
 from core.management.session_manager import SessionManager
 from core.server import async_comm
@@ -32,7 +33,7 @@ class AsyncServer:
             reader=reader,
             address=addr_str,
             status="active",
-            command_queue=command_queue
+            command_queue=command_queue,
         )
         await self.session_manager.add_session(session)
         print(f"[+] New agent connected! ID: {session_id} Address: {addr_str}")
@@ -43,7 +44,7 @@ class AsyncServer:
                     data = await async_comm.async_recv(reader)
                     if not data:
                         break
-                    print(f"[{session_id}] Received data: {data}")
+                    ResponseProcessor.process(data)
             except (ConnectionResetError, asyncio.IncompleteReadError):
                 print(f"[-] Connection closed gracefully/unexpectedly by agent {session_id}")
             except Exception as e:
@@ -53,7 +54,8 @@ class AsyncServer:
             try:
                 while True:
                     command = await command_queue.get()
-                    writer.write(command)
+                    header, enc = async_comm.length_prefixed_msg(command)
+                    writer.write(header + enc)
                     await writer.drain()
                     print(f"[{session_id}] Command sent successfully.")
             except Exception as e:

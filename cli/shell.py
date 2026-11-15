@@ -19,7 +19,7 @@ class InteractiveShell:
 
     def send_task(self, module, action, args=None):
         """Send a JSON task to the agent using the connection protocol."""
-        task = create_task(self.session_id, module, action, args or {})
+        task = create_task("json", self.session_id, module, action, args or {})
         asyncio.run(self.session_api.send_task(self.session_id, task))
 
     async def get_response(self):
