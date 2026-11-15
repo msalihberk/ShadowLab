@@ -30,9 +30,12 @@ async def send_data(writer: asyncio.StreamWriter, data: bytes | str):
 
 async def recv_data(reader: asyncio.StreamReader, decode=True):
     try:
+        print("0")
         size_data = await recv_exact(reader, HEADER_SIZE)
+        print("1")
         size = struct.unpack(">I", size_data)[0]
         enc = await recv_exact(reader, size)
+        print("2")
         dec = decrypt(enc)
         return dec.decode("utf-8") if decode else dec
     except ConnectionError:

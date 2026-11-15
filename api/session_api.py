@@ -5,6 +5,7 @@ class SessionAPI:
         self.base_url = "http://127.0.0.1:8080"
         self.session_list_api = "/api/v1/sessions"
         self.send_task_api = lambda a_id: f"/api/v1/agents/{a_id}/task"
+        self.task_response_api = lambda a_id: f"/api/v1/agents/{a_id}/response"
 
     async def get(self, api: str):
         async with httpx.AsyncClient() as client:
@@ -19,6 +20,10 @@ class SessionAPI:
     async def send_task(self, session_id: str, data: dict):
         api = self.send_task_api(session_id)
         return await self.post(api, data)
+
+    async def get_task_response(self, session_id: str):
+        api = self.task_response_api(session_id)
+        return await self.get(api)
 
     async def get_session_list(self):
         return await self.get(self.session_list_api)

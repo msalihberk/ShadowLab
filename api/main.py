@@ -67,3 +67,14 @@ async def send_task(session_id: int, req: TaskRequest):
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to send task: {str(e)}")
+
+@app.get("/api/v1/agents/{session_id}/response")
+async def send_task(session_id: int):
+    session = await manager.session_manager.get_session(session_id)
+    if not session:
+        raise HTTPException(status_code=404, detail="Agent Not Found")
+    try:
+        await async_recv(session.reader)
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get response: {str(e)}")

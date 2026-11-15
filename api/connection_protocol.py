@@ -21,22 +21,22 @@ def return_all_sessions(sessions: list):
         ]
     }
 
-def create_task(session_id: str, module: str, action: str, args: dict = None) -> str:
+def create_task(session_id: str, module: str, action: str, args: dict = None) -> dict:
     """Generates a JSON packet for the agent to execute a task."""
-    return json.dumps({
+    return {
         "task_id": f"t-{uuid.uuid4().hex[:6]}",
         "session_id": session_id,
         "module": module,
         "action": action,
         "args": args or {}
-    })
+    }
 
-def create_response(task_id: str, status: str, result: dict = None, metadata: dict = None , error: str = None) -> str:
+def create_response(task_id: str, status: str, result: dict = None, metadata: dict = None , error: str = None) -> dict:
     """Generates a JSON packet for the agent to send a response."""
-    return json.dumps({
+    return {
         "task_id": task_id,
         "status": status,
         "result": result or {},
         "error": error,
         "metadata": metadata or {}
-    })
+    }

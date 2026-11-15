@@ -1,3 +1,5 @@
+import asyncio
+
 from cli.options import Options
 from core.server.async_comm import send_data, recv_data
 from core.utils.paths import ensure_project_dir, get_project_path
@@ -18,7 +20,11 @@ class InteractiveShell:
     def send_task(self, module, action, args=None):
         """Send a JSON task to the agent using the connection protocol."""
         task = create_task(self.session_id, module, action, args or {})
-        self.session_api.send_task(self.session_id, task)
+        asyncio.run(self.session_api.send_task(self.session_id, task))
+
+    async def get_response(self):
+        response = await self.session_api.get_task_response(self.session_id)
+        return response
 
     def start(self):
         while True:
@@ -103,9 +109,11 @@ class InteractiveShell:
     def secinfo(self, conn=None, address=None):
         self.send_task(self.session_id, "secinfo", "get")
         try:
-            resp = self.json_receive(self.conn)
+            resp = asyncio.run(self.get_response())
             data = resp.get('result') if isinstance(resp, dict) and 'result' in resp else resp
-        except Exception:
+        except Exception as e:
+            print(e)
+            input("ok")
             data = {}
         Options.print_security_info_text(data)
         input("OK")
