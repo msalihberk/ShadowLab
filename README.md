@@ -5,7 +5,7 @@
 # ShadowLab
 
 ### Educational Command & Control Framework
-
+*Stable code on main • Active refactor on refactor/async-api-architecture*
 <br>
 
 <p>
@@ -45,6 +45,7 @@
 >
 > ShadowLab is an educational Command & Control (C2) framework designed for cybersecurity research, authorized lab testing, and controlled technical learning.
 >
+> The latest stable implementation is kept on the `main` branch. The active development work is happening on the `refactor/async-api-architecture` branch, where the project is being modernized around asynchronous server and API patterns.
 >
 > **This project must never be used against systems without explicit authorization.**
 
