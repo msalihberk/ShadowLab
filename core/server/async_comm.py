@@ -18,24 +18,19 @@ async def recv_exact(reader: asyncio.StreamReader, size: int) -> bytes:
         raise ConnectionError("Connection closed while receiving data") from exc
 
 
-async def send_data(writer: asyncio.StreamWriter, data: bytes | str):
+async def send_data(queue: asyncio.Queue, data: bytes | str):
     if isinstance(data, str):
         data = data.encode("utf-8")
 
     enc = encrypt(data)
-    writer.write(struct.pack(">I", len(enc)))
-    writer.write(enc)
-    await writer.drain()
-
+    await queue.put(struct.pack(">I", len(enc)))
+    await queue.put(enc)
 
 async def recv_data(reader: asyncio.StreamReader, decode=True):
     try:
-        print("0")
         size_data = await recv_exact(reader, HEADER_SIZE)
-        print("1")
         size = struct.unpack(">I", size_data)[0]
         enc = await recv_exact(reader, size)
-        print("2")
         dec = decrypt(enc)
         return dec.decode("utf-8") if decode else dec
     except ConnectionError:
@@ -46,16 +41,16 @@ async def recv_data(reader: asyncio.StreamReader, decode=True):
         raise
 
 
-async def send_json(writer: asyncio.StreamWriter, data: Any):
-    await send_data(writer, encode_json(data))
+async def send_json(queue: asyncio.Queue, data: Any):
+    await send_data(queue, encode_json(data))
 
 
 async def recv_json(reader: asyncio.StreamReader) -> Any:
     return decode_json(await recv_data(reader, decode=False))
 
 
-async def async_send(writer: asyncio.StreamWriter, data: Any):
-    await send_json(writer, data)
+async def async_send(queue: asyncio.Queue, data: Any):
+    await send_json(queue, data)
 
 
 async def async_recv(reader: asyncio.StreamReader) -> Any:

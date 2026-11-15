@@ -62,7 +62,6 @@ class Options():
 
     @staticmethod
     def print_security_info_text(data):
-        input("pause")
         print(f'''{Style.BRIGHT}{Fore.GREEN}            
 | SECURITY INFO |
               

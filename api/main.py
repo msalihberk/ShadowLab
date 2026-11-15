@@ -59,11 +59,11 @@ async def send_task(session_id: int, req: TaskRequest):
     )
 
     try:
-        await async_send(session.writer, task_packet)
+        await async_send(session.command_queue, task_packet)
         return {
             "status": "success",
             "session_id": session_id,
-            "payload": json.loads(task_packet)
+            "payload": task_packet
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to send task: {str(e)}")

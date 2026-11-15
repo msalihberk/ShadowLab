@@ -8,3 +8,4 @@ class Session:
     reader: asyncio.StreamReader
     address: str
     status: str
+    command_queue: asyncio.Queue
